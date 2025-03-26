@@ -1,7 +1,8 @@
+import { defineConfig } from 'vite'
 import restart from 'vite-plugin-restart'
 import glsl from 'vite-plugin-glsl'
 
-export default {
+export default defineConfig({
     root: 'src/',
     publicDir: '../static/',
     base: './',
@@ -21,4 +22,4 @@ export default {
         restart({ restart: [ '../static/**', ] }), // Restart server on static file change
         glsl() // Handle shader files
     ]
-}
+})
