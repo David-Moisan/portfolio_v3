@@ -8,7 +8,13 @@ import fragment from './shaders/fragment.glsl'
  * Base
  */
 //ANCHOR - Debug
-const gui = new GUI({ width: 340 })
+const gui = new GUI({ 
+    title: "Debug GUI",
+    width: 340,
+    closeFolders: false
+})
+
+const debugSettings = {}
 
 //ANCHOR - Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -24,6 +30,8 @@ mapTexture.wrapT = THREE.ClampToEdgeWrapping
 mapTexture.minFilter = THREE.LinearFilter
 mapTexture.magFilter = THREE.LinearFilter
 
+gui.add(mapTexture, 'minFilter')
+
 //ANCHOR - Map
 //ANCHOR - MapGeometry
 const mapGeometry = new THREE.PlaneGeometry(2.5, 2.5, 256, 256)
@@ -32,27 +40,23 @@ const mapGeometry = new THREE.PlaneGeometry(2.5, 2.5, 256, 256)
 const mapMaterial = new THREE.ShaderMaterial({
     vertexShader: vertex,
     fragmentShader: fragment,
+    wireframe: true,
     uniforms: {
         uTime: { value:  0},
         uMap: { value: mapTexture },
         uElevationScale: { value: 0.2 },
     },
-    transparent: true
 })
-
-gui.add(mapMaterial.uniforms.uElevationScale, 'value').min(0).max(1).step(0.01).name('Elevation Scale')
 
 const map = new THREE.Mesh(mapGeometry, mapMaterial)
 map.rotation.x = - Math.PI * 0.5
 scene.add(map)
 
+const debugMapMaterial = gui.addFolder('Map Params')
+debugMapMaterial.add(mapMaterial.uniforms.uElevationScale, 'value').min(0).max(1).step(0.01).name('Elevation Scale')
+
 //ANCHOR - Circle
 const circleGeometry = new THREE.CircleGeometry(0.1, 32)
-const circleMaterial = new THREE.MeshBasicMaterial({
-    color: 'rgb(26, 179, 204)',
-    transparent: true,
-    opacity: 0.8
-})
 
 const circlePositions = [
     { x: 0.13, y: 0.08, z: -0.34 },
@@ -64,12 +68,28 @@ const circlePositions = [
 const circles = []
 
 circlePositions.forEach((pos) => {
-    const circle = new THREE.Mesh(circleGeometry, circleMaterial)
+    const material = new THREE.MeshBasicMaterial({
+        color: 'rgb(26, 179, 204)',
+        transparent: true,
+        opacity: 0.8
+    })
+
+    const circle = new THREE.Mesh(circleGeometry, material)
     circle.rotation.x = - Math.PI * 0.5
     circle.position.set(pos.x, pos.y, pos.z)
 
     scene.add(circle)
     circles.push(circle)
+})
+
+const debugCircles = gui.addFolder('Circles Params')
+debugSettings.circleRadius = 0.1
+debugCircles.add(debugSettings, 'circleRadius').min(0).max(1.618).step(0.001).name("Circle Radius").onChange((value) => {
+    circles.forEach((circle) => {
+        const newGeometry = new THREE.CircleGeometry(value, 32)
+        circle.geometry.dispose()
+        circle.geometry = newGeometry
+    })
 })
 
 //ANCHOR - Sizes
@@ -99,6 +119,7 @@ let hoveredCircle = null
 
 const normalColor = new THREE.Color('rgb(26, 179, 204)')
 const hoverColor = new THREE.Color('rgb(255, 100, 100)')
+
 
 window.addEventListener("mousemove", (event) => {
     mouse.x = (event.clientX / sizes.width) * 2 - 1
