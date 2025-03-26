@@ -8,7 +8,13 @@ import fragment from './shaders/fragment.glsl'
  * Base
  */
 //ANCHOR - Debug
-const gui = new GUI({ width: 340 })
+const gui = new GUI({ 
+    title: "Debug GUI",
+    width: 340,
+    closeFolders: false
+})
+
+const debugSettings = {}
 
 //ANCHOR - Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -18,117 +24,73 @@ const scene = new THREE.Scene()
 
 //ANCHOR - Textures
 const textureLoader = new THREE.TextureLoader()
-const mapTexture = textureLoader.load('/textures/mapper2.png', () => {
-    console.log("texture chargée !", mapTexture)
-    placeCircle()
-})
+const mapTexture = textureLoader.load('/textures/mapper2.png')
 mapTexture.wrapS = THREE.ClampToEdgeWrapping
 mapTexture.wrapT = THREE.ClampToEdgeWrapping
 mapTexture.minFilter = THREE.LinearFilter
 mapTexture.magFilter = THREE.LinearFilter
 
+gui.add(mapTexture, 'minFilter')
+
 //ANCHOR - Map
 //ANCHOR - MapGeometry
-const mapGeometry = new THREE.PlaneGeometry(2.5, 2.5, 128, 128)
+const mapGeometry = new THREE.PlaneGeometry(2.5, 2.5, 256, 256)
 
 //ANCHOR - MapMaterial
 const mapMaterial = new THREE.ShaderMaterial({
     vertexShader: vertex,
     fragmentShader: fragment,
+    wireframe: true,
     uniforms: {
         uTime: { value:  0},
         uMap: { value: mapTexture },
         uElevationScale: { value: 0.2 },
     },
-    transparent: true
 })
 
-gui.add(mapMaterial.uniforms.uElevationScale, 'value').min(0).max(1).step(0.01).name('Elevation Scale')
-
-//ANCHOR - Circle
-const getElevation = (x, y) => {
-
-    if (!mapTexture.image) {
-        console.warn("La texture n'est pas encore chargée !")
-        return 0
-    }
-    
-    const canvas = document.createElement("canvas")
-    const ctx = canvas.getContext("2d")
-    const img = mapTexture.image
-    
-    canvas.width = img.width
-    canvas.height = img.height
-    ctx.drawImage(img, 0, 0)
-
-    const u = (x + 1) / 2
-    const v = (y + 1) / 2
-
-    const pixel = ctx.getImageData(u * img.width, v * img.height, 1, 1).data
-
-    return (pixel[0] / 255) * mapMaterial.uniforms.uElevationScale.value
-}
-
-const circleGeometry = new THREE.CircleGeometry(0.1, 32)
-const circleMaterial = new THREE.MeshBasicMaterial({
-    color: 'rgb(26, 179, 204)',
-    transparent: true,
-    opacity: 0.8
-})
-
-const numCircles = 5;
-const margin = 0.3;
-const circles = [];
-
-const placeCircle = () => {
-    for (let i = 0; i < numCircles; i++) {
-        const x = (Math.random() * 2 - 1) * (1 - margin)
-        const y = (Math.random() * 2 - 1) * (1 - margin)
-    
-        const elevation = getElevation(x, y)
-    
-        const circle = new THREE.Mesh(circleGeometry, circleMaterial)
-        circle.rotation.x = - Math.PI * 0.5
-        circle.position.set(x, y, elevation);
-    
-        scene.add(circle)
-        circles.push(circle)
-    }
-}
-
-const raycaster = new THREE.Raycaster()
-const mouse = new THREE.Vector2()
-let hovered = false
-
-window.addEventListener('mousemove', (event) => {
-    mouse.x = (event.clientX / sizes.width) * 2 - 1
-    mouse.y = (event.clientY / sizes.height) * 2 + 1
-
-    raycaster.setFromCamera(mouse, camera)
-    const intersects = raycaster.intersectObjects(circles)
-
-    if (intersects.length > 0) {
-        document.body.style.cursor = "pointer"
-        hovered = true
-    } else {
-        document.body.style.cursor = "default"
-        hovered = false
-    }
-})
-
-window.addEventListener("click", () => {
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(circles);
-
-    if (intersects.length > 0) {
-        alert("Point cliqué !");
-    }
-})
-
-//ANCHOR - MapMesh
 const map = new THREE.Mesh(mapGeometry, mapMaterial)
 map.rotation.x = - Math.PI * 0.5
 scene.add(map)
+
+const debugMapMaterial = gui.addFolder('Map Params')
+debugMapMaterial.add(mapMaterial.uniforms.uElevationScale, 'value').min(0).max(1).step(0.01).name('Elevation Scale')
+
+//ANCHOR - Circle
+const circleGeometry = new THREE.CircleGeometry(0.1, 32)
+
+const circlePositions = [
+    { x: 0.13, y: 0.08, z: -0.34 },
+    { x: -0.853, y: 0.08, z: -0.698 },
+    { x: 0.501, y: 0.08, z: -0.853 },
+    { x: -0.891, y: 0.08, z: 0.385 },
+    { x: 0.733, y: 0.08, z: 0.965 }
+]
+const circles = []
+
+circlePositions.forEach((pos) => {
+    const material = new THREE.MeshBasicMaterial({
+        color: 'rgb(26, 179, 204)',
+        transparent: true,
+        opacity: 0.8
+    })
+
+    const circle = new THREE.Mesh(circleGeometry, material)
+    circle.rotation.x = - Math.PI * 0.5
+    circle.position.set(pos.x, pos.y, pos.z)
+
+    scene.add(circle)
+    circles.push(circle)
+})
+
+const debugCircles = gui.addFolder('Circles Params')
+debugSettings.circleRadius = 0.1
+debugCircles.add(debugSettings, 'circleRadius').min(0).max(1.618).step(0.001).name("Circle Radius").onChange((value) => {
+    circles.forEach((circle) => {
+        const newGeometry = new THREE.CircleGeometry(value, 32)
+        circle.geometry.dispose()
+        circle.geometry = newGeometry
+    })
+})
 
 //ANCHOR - Sizes
 const sizes = {
@@ -148,6 +110,48 @@ window.addEventListener('resize', () => {
     //ANCHOR - Update renderer
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+})
+
+//ANCHOR - Raycaster
+const raycaster = new THREE.Raycaster()
+const mouse = new THREE.Vector2()
+let hoveredCircle = null
+
+const normalColor = new THREE.Color('rgb(26, 179, 204)')
+const hoverColor = new THREE.Color('rgb(255, 100, 100)')
+
+
+window.addEventListener("mousemove", (event) => {
+    mouse.x = (event.clientX / sizes.width) * 2 - 1
+    mouse.y = -(event.clientY / sizes.height) * 2 + 1
+
+    raycaster.setFromCamera(mouse, camera)
+    const intersects = raycaster.intersectObjects(circles)
+
+    if (intersects.length > 0) {
+        const circle = intersects[0].object
+
+        if (circle !== hoveredCircle) {
+            if (hoveredCircle) {
+                hoveredCircle.material.color.set(normalColor)
+                hoveredCircle.material.opacity = 0.8
+            }
+
+            circle.material.color.set(hoverColor)
+            circle.material.opacity = 1
+
+            hoveredCircle = circle
+            document.body.style.cursor = "pointer"
+        }
+    } else {
+        if (hoveredCircle) {
+            hoveredCircle.material.color.set(normalColor);
+            hoveredCircle.material.opacity = 0.8;
+            hoveredCircle = null;
+        }
+
+        document.body.style.cursor = "default"
+    }
 })
 
 //ANCHOR - Base Camera
