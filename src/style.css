@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Sofia+Sans+Semi+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -6,6 +8,7 @@
 html,
 body {
     overflow: hidden;
+    font-size: 16px;
 }
 
 .webgl {
@@ -13,4 +16,19 @@ body {
     top: 0;
     left: 0;
     outline: none;
+}
+
+.header-source {
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-source > span {
+    color: #fff;
+    z-index: 100;
+    font-weight: 700;
+    font-family: 'Sofia Sans Semi Condensed', serif;
+    margin: 1.618rem 1rem;
 }

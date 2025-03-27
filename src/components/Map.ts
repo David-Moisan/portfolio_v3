@@ -11,12 +11,15 @@ export default class Map {
     public material!: THREE.ShaderMaterial
     public mesh!: THREE.Mesh
     public debugFolder!: GUI
+    public helper!: THREE.AxesHelper
 
     constructor(public experience: Experience) {
 
         // Debug
         if (this.experience.debug.active) {
             this.debugFolder = this.experience.debug.debugger.addFolder('Map Params')
+            this.helper = new THREE.AxesHelper(5)
+            this.experience.scene.add(this.helper)
         }
 
         this.setGeometry()
