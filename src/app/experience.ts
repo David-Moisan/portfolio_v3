@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import GUI from 'lil-gui'
 import Time from "../utils/time"
 import Sizes from "../utils/sizes"
 import Camera from './camera'
@@ -20,6 +21,7 @@ export default class Experience {
     public resources!: Resources
     public world!: World
     public debug!: Debug
+    public debugFolder!: GUI
 
     constructor(public canvas: HTMLCanvasElement) {
         if (instance) {
@@ -37,7 +39,9 @@ export default class Experience {
         this.world = new World(this)
         this.debug = new Debug(this)
 
-        console.log(this.world)
+        if (this.debug.active) {
+            this.debugFolder = this.debug.debugger.addFolder('General Settings')
+        }
 
         this.sizes.on('resize', () => {
             this.resize()
@@ -46,6 +50,8 @@ export default class Experience {
         this.time.on('tick', () => {
             this.update()
         })
+
+        this.setGeneralDebug()
     }
 
     resize() {
@@ -56,5 +62,37 @@ export default class Experience {
     update() {
         this.camera.update()
         this.renderer.update()
+    }
+
+    setGeneralDebug() {
+        this.debugFolder.add(this.camera.controls, 'enabled').name('Controls Enabled')
+    }
+
+    destroy() {
+        this.sizes.off('resize')
+        this.time.off('tick')
+
+        // Traverse the whole scene
+        this.scene.traverse((child: any) => {
+            if (child instanceof THREE.Mesh) {
+                child.geometry.dispose()
+
+                // Loop through the material properties
+                for (const key in child.material) {
+                    const value = child.material[key]
+
+                    if (value && typeof value.dispose === 'function') {
+                        value.dispose()
+                    }
+                }
+            }
+        })
+
+        this.camera.controls.dispose()
+        this.renderer.instance.dispose()
+
+        if (this.debug.active) {
+            this.debug.debugger.destroy()
+        }
     }
 }

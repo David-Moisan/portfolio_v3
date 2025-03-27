@@ -1,0 +1,1 @@
+export const BASIC_ROTATION = - Math.PI * 0.5;
