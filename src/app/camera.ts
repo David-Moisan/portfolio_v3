@@ -12,18 +12,18 @@ export default class Camera {
         this.setOrbitControls()
 
         this.experience.sizes.on('resize', () => {
-            console.log('Hey')
+            this.resize()
         })
     }
 
     setInstance() {
         this.instance = new THREE.PerspectiveCamera(
-            35, 
+            45, 
             this.experience.sizes.width / this.experience.sizes.height, 
             0.1, 
             100
         )
-        this.instance.position.set(1, 1, 1)
+        this.instance.position.set(0, 1, -2.08)
         this.experience.scene.add(this.instance)
     }
 
