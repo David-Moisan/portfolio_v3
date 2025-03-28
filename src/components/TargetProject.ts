@@ -5,7 +5,7 @@ import { TargetProjectPositionParams } from '@/types/targetProjectType';
 import { BASIC_ROTATION } from '../types/transformation';
 import Raycaster from '../utils/raycaster';
 import { COLORS, OPACITIES } from '../types/style';
-import gsap from 'gsap';
+import Animation from '../utils/animation';
 
 export default class TargetProject {
     public debugFolder!: GUI
@@ -63,9 +63,12 @@ export default class TargetProject {
             group.rotation.x = BASIC_ROTATION
             group.position.set(pos.x, pos.y, pos.z)
 
-            this.startPulseAnimation(group)
             this.experience.scene.add(group)
             this.meshes.push(group)
+
+            Animation.pulse(circleMesh, 1.1, 1.5)
+            Animation.rotate(ringMesh, 34)
+            Animation.blink(group, 0.8, 1)
         })
 
     }
@@ -90,27 +93,6 @@ export default class TargetProject {
             const newGeometry = new THREE.CircleGeometry(value, 32)
             mesh.geometry.dispose()
             mesh.geometry = newGeometry
-        })
-    }
-
-    private startPulseAnimation(group: THREE.Group) {
-        group.children.forEach(child => {
-            if (child instanceof THREE.Mesh) {
-                gsap.to(child.scale, {
-                    x: 1.1, y: 1.1, z: 1.1,
-                    duration: 1,
-                    yoyo: true,
-                    repeat: -1,
-                    ease: "sine.inOut"
-                })
-                gsap.to(child.material, {
-                    opacity: 0.6,
-                    duration: 1,
-                    yoyo: true,
-                    repeat: -1,
-                    ease: "sine.inOut"
-                })
-            }
         })
     }
 }

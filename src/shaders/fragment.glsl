@@ -3,23 +3,26 @@ precision mediump float;
 #define PI 3.14159265358979323846
 #define backgroundColor vec3(0.015, 0.05, 0.07)
 #define blue vec3(0.1, 0.7, 0.8)
+#define textColor vec3(0.6)
 
 uniform sampler2D uMap;
+uniform sampler2D uGridTexture;
 
 varying float vTime;
 varying vec2 vUv;
 varying float vElevation;
 varying vec3 vNormal;
 
-// Fonction de bruit pseudo-aléatoire
-// float random(vec2 uv) {
-//     return fract(sin(dot(uv, vec2(127.1, 311.7))) * 43758.5453123);
-// }
+float random(vec2 st) {
+    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+}
 
-// float drawCircle(vec2 uv, vec2 center, float radius, float blur) {
-//     float dist = distance(uv, center);
-//     return smoothstep(radius, radius - blur, dist);
-// }
+vec2 rotateUV(vec2 uv, float angle) {
+    float cosA = cos(angle);
+    float sinA = sin(angle);
+    mat2 rotationMatrix = mat2(cosA, -sinA, sinA, cosA);
+    return rotationMatrix * (uv - 0.5) + 0.5;
+}
 
 void main() {
     // Hauteur du terrain
@@ -44,36 +47,17 @@ void main() {
 
     vec3 gridColor = blue * (gridParticlesX + gridParticlesY);
 
-    // // Génération des cercles aléatoire
-    // vec3 circles = vec3(0.0);
-    // const int numCircles = 5;
+    vec2 cell = floor(vUv * gridSpacing);
+    float cellRandom = random(cell);
 
-    // vec2 circlePositions[numCircles];
-    // for (int i = 0; i < numCircles; i++) {
-    //     vec2 seed = vec2(float(i) * 10.0, float(i) * 20.0);
-
-    //     float margin = 0.1;
-    //     circlePositions[i] = margin + (vec2(random(seed), random(seed + vec2(1.0, 1.0)))* (1.0 - 2.0 * margin));
-    // }
-
-    // // ⚙️ Paramètres pour l'effet futuriste des cercles
-    // float circleSize = 0.01;
-    // float glowSize = 0.04;
-    // float pulse = sin(vTime * 2.0) * 0.005;
-
-    // // Dessiner les cercles
-    // for (int i = 0; i < numCircles; i++) {
-    //     vec2 pos = circlePositions[i];
-
-    //     float mainCircle = drawCircle(vUv, pos, circleSize, 0.005);
-    //     float glow = drawCircle(vUv, pos, glowSize, 0.01) * 0.5;
-    //     float outerCircle = drawCircle(vUv, pos, circleSize + 0.015 + pulse, 0.002) * 0.8;
-
-    //     circles += (mainCircle + glow + outerCircle) * blue;
-    // }
+    if (cellRandom > 0.97) {
+        vec2 rotatedTextUv = rotateUV(fract(vUv * gridSpacing), radians(180.0));
+        vec3 textSample = texture2D(uGridTexture, rotatedTextUv).rgb;
+        gridColor = mix(gridColor, textColor * textSample, textSample.r);
+    }
 
     // 🏆 **Fusion finale : background + grille + cibles**
-    vec3 finalColor = backgroundColor + mix(gridColor, mapColor, height); // + targetColor;
+    vec3 finalColor = backgroundColor + mix(gridColor, mapColor, height);
 
     gl_FragColor = vec4(finalColor, 1.0);
 }
