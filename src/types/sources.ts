@@ -9,5 +9,10 @@ export const sources: SourceType[] = [
         name: 'environmentMapTexture',
         type: 'texture',
         path: 'textures/mapper2.png'
+    },
+    {
+        name: 'gridMapTexture',
+        type: 'texture',
+        path: 'textures/gridShader.jpg'
     }
 ]
