@@ -1,6 +1,6 @@
 export interface SourceType {
     name: string;
-    type: "texture";
+    type: "texture" | "font";
     path: string | string[];
 }
 
@@ -14,5 +14,10 @@ export const sources: SourceType[] = [
         name: 'gridMapTexture',
         type: 'texture',
         path: 'textures/gridShader.jpg'
+    },
+    {
+        name: 'uiFont',
+        type: 'font',
+        path: '/fonts/helvetiker_regular.typeface.json'
     }
 ]

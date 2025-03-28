@@ -13,7 +13,7 @@ export default class Debug {
             this.debugger = new GUI({
                 title: "Debug GUI",
                 width: 340,
-                closeFolders: false
+                closeFolders: true
             })
         }
     }

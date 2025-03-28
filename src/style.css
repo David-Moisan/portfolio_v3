@@ -32,3 +32,56 @@ body {
     font-family: 'Sofia Sans Semi Condensed', serif;
     margin: 1.618rem 1rem;
 }
+
+.ui-modal {
+    position: fixed;
+    bottom: 32px;
+    left: 32px;
+    width: 320px;
+    background-color: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 12px;
+    padding: 24px;
+    color: white;
+    font-family: monospace;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+    transform: translateY(20px);
+    opacity: 0;
+    pointer-events: auto;
+    transition: all 0.3s ease-out;
+    z-index: 1000;
+}
+
+.ui-modal * {
+    pointer-events: auto;
+}
+
+.ui-modal h3 {
+    color: #38bdf8;
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+}
+
+.ui-modal p {
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.ui-modal a {
+    color: #38bdf8;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 12px;
+}
+
+.ui-modal button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #38bdf8;
+    cursor: pointer;
+}
