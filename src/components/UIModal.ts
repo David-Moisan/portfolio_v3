@@ -10,29 +10,44 @@ export default class UIModal {
         this.domElement = document.createElement('div')
         this.domElement.className = 'ui-modal'
         this.initDOM()
-        document.body.appendChild(this.domElement)
         this.setupEventListeners()
+        document.body.appendChild(this.domElement)
     }
 
     private initDOM() {
         this.domElement.innerHTML = `
-            <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-title">
+                    <span class="modal-title-point"></span>
+                    <h3 class="modal-title"></h3>
+                </div>
                 <button id="modal-close" class="modal-close">✕</button>
-                <h3 class="modal-title"></h3>
-                <p class="modal-description"></p>
+            </div>
+            <div class="modal-content">
                 <div class="modal-date"></div>
+                <p class="modal-description"></p>
+            </div>
+            <div class="modal-footer">
                 <a href="#" target="_blank" class="modal-link" style="display: none;">Open →</a>
             </div>
         `
     }
 
     private setupEventListeners() {
-        this.domElement.querySelector('#modal-close')?.addEventListener('click', (e) => {
-            e.preventDefault()
-            this.hide()
-        })
 
-        this.domElement.querySelector('.modal-content')?.addEventListener('click', (e) => {
+        setTimeout(() => {
+            const closeButton = this.domElement.querySelector('#modal-close')
+            if (closeButton) {
+                closeButton.addEventListener('click', (e) => {
+                    e.preventDefault()
+                    this.hide()
+                })
+            } else {
+                console.error('Close button not found in modal')
+            }
+        }, 10)
+
+        this.domElement.querySelector('.modal')?.addEventListener('click', (e) => {
             e.stopPropagation()
         })
     }
@@ -91,8 +106,10 @@ export default class UIModal {
             duration: 0.2,
             ease: "power2.in",
             onComplete: () => {
-                this.domElement.style.display = 'none';
-                this.currentData = null;
+                this.domElement.innerHTML = ''
+                this.initDOM()
+                this.setupEventListeners()
+                this.domElement.style.display = 'none'
             }
         })
         this.isVisible = false

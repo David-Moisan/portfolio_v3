@@ -7,7 +7,6 @@ import { COLORS, OPACITIES } from '../types/style';
 import Animation from '../utils/animation';
 import { TextGeometry } from 'three/examples/jsm/Addons';
 import { TargetData, TargetModalData } from '../types/targetProjectType';
-import gsap from 'gsap';
 import UIModal from './UIModal';
 
 export default class TargetProject {
@@ -84,6 +83,7 @@ export default class TargetProject {
 
             this.experience.scene.add(group)
             this.meshes.push(group)
+
         })
     }
 

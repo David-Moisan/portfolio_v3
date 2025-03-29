@@ -41,6 +41,7 @@ export default class Experience {
 
         if (this.debug.active) {
             this.debugFolder = this.debug.debugger.addFolder('General Settings')
+            this.debugFolder.add(this.camera.controls, 'enabled').name('Controls Enabled')
         }
 
         this.sizes.on('resize', () => {
@@ -51,7 +52,6 @@ export default class Experience {
             this.update()
         })
 
-        this.setGeneralDebug()
     }
 
     resize() {
@@ -62,18 +62,6 @@ export default class Experience {
     update() {
         this.camera.update()
         this.renderer.update()
-    }
-
-    setGeneralDebug() {
-        this.debugFolder.add(this.camera.controls, 'enabled').name('Controls Enabled')
-        // this.debugFolder.add(this.camera.instance.position, 'x').min(-10).max(10).step(0.01).name("Camera Axes X")
-        // this.debugFolder.add(this.camera.instance.position, 'y').min(-10).max(10).step(0.01).name("Camera Axes Y")
-        // this.debugFolder.add(this.camera.instance.position, 'z').min(-10).max(10).step(0.01).name("Camera Axes Z")
-        
-        // this.debugFolder.add(this.camera.instance.rotation, 'x').min(0).max(10).step(0.01).name("Camera Rotation Axes X")
-        // this.debugFolder.add(this.camera.instance.rotation, 'y').min(0).max(10).step(0.01).name("Camera Rotation Axes Y")
-        // this.debugFolder.add(this.camera.instance.rotation, 'z').min(0).max(10).step(0.01).name("Camera Rotation Axes Z")
-
     }
 
     // destroy() {

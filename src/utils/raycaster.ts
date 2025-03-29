@@ -8,7 +8,6 @@ export default class Raycaster extends EventEmitter {
     private mouse!: THREE.Vector2
     private camera!: THREE.Camera
     private hoveredObject: THREE.Object3D | null = null
-    private clickedObject: THREE.Object3D | null = null
     private objectsToTest: THREE.Object3D[] = []
 
     constructor(public experience: Experience) {
