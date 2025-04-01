@@ -1,5 +1,6 @@
 import Experience from './app/experience'
 import './style.css'
+import '../gsap-config'
 
 const canvas = document.querySelector("canvas.webgl") as HTMLCanvasElement | null
 

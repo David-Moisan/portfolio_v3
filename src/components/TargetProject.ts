@@ -61,7 +61,8 @@ export default class TargetProject {
             const material = new THREE.MeshBasicMaterial({
                 color: COLORS.primary,
                 transparent: true,
-                opacity: OPACITIES.default
+                opacity: OPACITIES.default,
+                depthWrite: false
             })
 
             // Cercle exterieur
@@ -135,15 +136,28 @@ export default class TargetProject {
     private setupInteractivity() {
         this.raycaster = new Raycaster(this.experience)
         this.raycaster.addObjects(this.meshes)
-        this.raycaster.on('click', (object: THREE.Object3D) => {
+        this.raycaster.on('hover', (object: THREE.Object3D) => {
             const targetGroup = this.findParentTarget(object)
             
             if (targetGroup && this.font) {
                 const targetIndex = this.meshes.indexOf(targetGroup)
                 
                 if (targetIndex !== -1) {
-                    this.showTitle(this.targets[targetIndex].title, targetGroup.position, targetIndex)
+                    this.showTitle(this.targets[targetIndex].title, targetGroup.position)
                 }
+            }
+        })
+
+        this.raycaster.on('hoverEnd', () => {
+            this.clearTitle()
+        })
+
+        this.raycaster.on('click', (object: THREE.Object3D) => {
+            const targetGroup = this.findParentTarget(object)
+
+            if (targetGroup) {
+                const targetIndex = this.meshes.indexOf(targetGroup)
+                this.showModal(targetIndex)
             }
         })
     }
@@ -161,7 +175,7 @@ export default class TargetProject {
         return null
     }
 
-    private showTitle(title: string, position: THREE.Vector3, targetIndex: number) {
+    private showTitle(title: string, position: THREE.Vector3) {
 
         this.clearTitle()
         
@@ -176,10 +190,12 @@ export default class TargetProject {
             lineGeometry,
             new THREE.LineBasicMaterial({
                 color: COLORS.hover,
-                linewidth: 2
+                linewidth: 2,
+                transparent: true,
             })
         )
 
+        Animation.fadeIn(this.titleLine)
         this.experience.scene.add(this.titleLine)
 
         // Text
@@ -190,7 +206,10 @@ export default class TargetProject {
             curveSegments: 12
         })
 
-        const textMaterial = new THREE.MeshBasicMaterial({ color: COLORS.hover })
+        const textMaterial = new THREE.MeshBasicMaterial({ 
+            color: COLORS.hover,
+            transparent: true,
+        })
         this.titleMesh = new THREE.Mesh(textGeometry, textMaterial)
 
         textGeometry.computeBoundingBox()
@@ -212,8 +231,6 @@ export default class TargetProject {
         )
 
         this.experience.scene.add(this.titleMesh)
-
-        this.showModal(targetIndex)
     }
 
     private showModal(targetIndex: number) {
@@ -232,12 +249,12 @@ export default class TargetProject {
 
     private clearTitle() {
         if (this.titleLine) {
-            this.experience.scene.remove(this.titleLine)
+            Animation.fadeOut(this.titleLine)
             this.titleLine = null
         }
 
         if (this.titleMesh) {
-            this.experience.scene.remove(this.titleMesh);
+            Animation.fadeOut(this.titleMesh);
             this.titleMesh = null;
         }
     }

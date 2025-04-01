@@ -17,6 +17,9 @@ export default defineConfig({
         emptyOutDir: true, // Empty the folder first
         sourcemap: true // Add sourcemap
     },
+    optimizeDeps: {
+        include: ['gsap'],
+    },
     plugins:
     [
         restart({ restart: [ '../static/**', ] }), // Restart server on static file change

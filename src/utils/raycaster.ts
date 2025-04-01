@@ -65,6 +65,7 @@ export default class Raycaster extends EventEmitter {
         }
 
         document.body.style.cursor = CURSORS.POINTER
+        this.trigger('hover', [object])
     }
 
     private onMouseLeave(object: THREE.Object3D) {
@@ -74,5 +75,6 @@ export default class Raycaster extends EventEmitter {
         }
 
         document.body.style.cursor = CURSORS.DEFAULT
+        this.trigger('hoverEnd', [object])
     }
 }
