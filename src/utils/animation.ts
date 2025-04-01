@@ -55,4 +55,43 @@ export default class Animation {
             ease: "none"
         })
     }
+
+    static fadeIn(object: THREE.Object3D, duration: number = 0.3) {
+        if (object instanceof THREE.Mesh) {
+            gsap.to(object.material, {
+                opacity: 1,
+                duration,
+                ease: "power2.out",
+                onStart: () => {
+                    object.material.transparent = true
+                    object.material.needsUpdate = true
+                }
+            })
+        } else if (object instanceof THREE.Group) {
+            object.children.forEach(child => {
+                if (child instanceof THREE.Mesh) {
+                    gsap.to(object, {
+                        opacity: 1,
+                        duration,
+                        ease: "power2.out",
+                        onStart: () => {
+                            child.material.transparent = true
+                            child.material.needsUpdate = true
+                        }
+                    })
+                }
+            })
+        }
+    }
+
+    static fadeOut(object: THREE.Object3D, duration: number = 0.1) {
+        gsap.to(object, {
+            opacity: 0,
+            duration,
+            ease: "power2.in",
+            onComplete: () => {
+                if (object.parent) object.parent.remove(object)
+            }
+        })
+    }
 }

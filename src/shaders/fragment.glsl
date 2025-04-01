@@ -47,6 +47,7 @@ void main() {
 
     vec3 gridColor = blue * (gridParticlesX + gridParticlesY);
 
+    // 📌 **Ajout des caractères aléatoires sur la grille**
     vec2 cell = floor(vUv * gridSpacing);
     float cellRandom = random(cell);
 

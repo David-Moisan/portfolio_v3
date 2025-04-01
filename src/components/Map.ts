@@ -63,8 +63,10 @@ export default class Map {
             },
         })
 
-        this.debugFolder.add(this.material.uniforms.uElevationScale, 'value').min(0).max(1).step(0.01).name('Elevation Scale')
-        this.debugFolder.add(this.material, 'wireframe').name('Wireframe')
+        if (this.experience.debug.active) {
+            this.debugFolder.add(this.material.uniforms.uElevationScale, 'value').min(0).max(1).step(0.01).name('Elevation Scale')
+            this.debugFolder.add(this.material, 'wireframe').name('Wireframe')
+        }
     }
 
     setMesh() {

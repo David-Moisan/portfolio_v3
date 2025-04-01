@@ -1,3 +1,4 @@
+import { FontLoader } from "three/examples/jsm/Addons";
 import { SourceType } from "../types/sources";
 import { EventEmitter } from "./eventEmitter";
 import * as THREE from 'three';
@@ -21,15 +22,28 @@ export default class Resources extends EventEmitter {
     }
 
     setLoaders() {
-        this.loaders.textureLoader = new THREE.TextureLoader()
+        this.loaders = {
+            textureLoader: new THREE.TextureLoader(),
+            fontLoader: new FontLoader(),
+        }
     }
 
     startLoading() {
         for(const source of this.sources) {
             if (source.type === 'texture') {
-                this.loaders.textureLoader.load(source.path, (file: any) => {
-                    this.sourceLoaded(source, file)
-                })
+                this.loaders.textureLoader.load(
+                    source.path, 
+                    (file: THREE.Texture) => this.sourceLoaded(source, file),
+                    undefined,
+                    (error: ErrorEvent) => this.handleError(source, error)
+                )
+            } else if (source.type === 'font') {
+                this.loaders.fontLoader.load(
+                    source.path, 
+                    (font: any) => this.sourceLoaded(source, font),
+                    undefined,
+                    (error: ErrorEvent) => this.handleError(source, error) 
+                )
             }
         }
     }
@@ -41,5 +55,10 @@ export default class Resources extends EventEmitter {
         if (this.loaded === this.toLoad) {
             this.trigger('ready')
         }
+    }
+
+    private handleError(source: SourceType, error: ErrorEvent) {
+        console.error(`Error loading ${source.name}:`, error);
+        this.loaded++;
     }
 }
