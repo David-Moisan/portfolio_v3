@@ -8,7 +8,12 @@ export const sources: SourceType[] = [
     {
         name: 'environmentMapTexture',
         type: 'texture',
-        path: 'textures/mapper2.png'
+        path: 'textures/map_height.png'
+    },
+    {
+        name: 'environmentMapNormalTexture',
+        type: 'texture',
+        path: 'textures/map_normal.png'
     },
     {
         name: 'gridMapTexture',

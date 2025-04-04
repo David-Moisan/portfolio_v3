@@ -41,6 +41,13 @@ export default class Map {
         this.textures.material.wrapT = THREE.ClampToEdgeWrapping
         this.textures.material.minFilter = THREE.LinearFilter 
         this.textures.material.magFilter = THREE.LinearFilter 
+        
+        // Normal Map for surface detail
+        this.textures.normalMap = this.experience.resources.items.environmentMapNormalTexture
+        this.textures.normalMap.wrapS = THREE.RepeatWrapping
+        this.textures.normalMap.wrapT = THREE.RepeatWrapping
+        this.textures.normalMap.minFilter = THREE.LinearFilter 
+        this.textures.normalMap.magFilter = THREE.LinearFilter
 
         // Text Texture for style of grid
         this.textures.gridMaterial = this.experience.resources.items.gridMapTexture
@@ -59,13 +66,16 @@ export default class Map {
                 uTime: { value:  0},
                 uMap: { value: this.textures.material },
                 uGridTexture: { value: this.textures.gridMaterial },
-                uElevationScale: { value: 0.2 },
+                uNormalMap: { value: this.textures.normalMap },
+                uElevationScale: { value: 0.28 },
+                uNormalStrength: { value: 1.59 }
             },
         })
 
         if (this.experience.debug.active) {
             this.debugFolder.add(this.material.uniforms.uElevationScale, 'value').min(0).max(1).step(0.01).name('Elevation Scale')
             this.debugFolder.add(this.material, 'wireframe').name('Wireframe')
+            this.debugFolder.add(this.material.uniforms.uNormalStrength, 'value').min(0).max(10).step(0.01).name('Detail Normal Scale')
         }
     }
 

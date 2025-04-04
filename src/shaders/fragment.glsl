@@ -1,9 +1,14 @@
 precision mediump float;
 
 #define PI 3.14159265358979323846
-#define backgroundColor vec3(0.015, 0.05, 0.07)
-#define blue vec3(0.1, 0.7, 0.8)
-#define textColor vec3(0.6)
+#define BACKGROUND_COLOR vec3(0.015, 0.05, 0.07)
+#define BLUE_COLOR vec3(0.1, 0.7, 0.8)
+#define TEXT_COLOR vec3(0.6)
+#define COAST_WAVES_AMOUNT 5.0
+#define COAST_WAVES_SPEED 0.1
+#define DATASTREAM_SPEED 50.0
+#define DATASTREAM_ROADS 5.0
+#define DATASTREAM_AMOUNT 0.8
 
 uniform sampler2D uMap;
 uniform sampler2D uGridTexture;
@@ -17,6 +22,10 @@ float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
+float random(float x) {
+    return fract(sin(x * 12.9898) * 43758.5453123);
+}
+
 vec2 rotateUV(vec2 uv, float angle) {
     float cosA = cos(angle);
     float sinA = sin(angle);
@@ -25,6 +34,11 @@ vec2 rotateUV(vec2 uv, float angle) {
 }
 
 void main() {
+    // Calcul de l'éclairage basé sur les normales
+    vec3 lightDirection = normalize(vec3(0.3, 1.0, 0.5));
+    float lightIntensity = max(dot(vNormal, lightDirection), 0.0);
+    lightIntensity = mix(0.3, 1.0, lightIntensity);
+
     // Hauteur du terrain
     float height = vElevation;
     float contrast = smoothstep(0.2, 0.8, height);
@@ -45,7 +59,7 @@ void main() {
     float gridParticlesX = step(gridX, lineThickness) * (1.0 - particleX);
     float gridParticlesY = step(gridY, lineThickness) * (1.0 - particleY);
 
-    vec3 gridColor = blue * (gridParticlesX + gridParticlesY);
+    vec3 gridColor = BLUE_COLOR * (gridParticlesX + gridParticlesY);
 
     // 📌 **Ajout des caractères aléatoires sur la grille**
     vec2 cell = floor(vUv * gridSpacing);
@@ -54,11 +68,11 @@ void main() {
     if (cellRandom > 0.97) {
         vec2 rotatedTextUv = rotateUV(fract(vUv * gridSpacing), radians(180.0));
         vec3 textSample = texture2D(uGridTexture, rotatedTextUv).rgb;
-        gridColor = mix(gridColor, textColor * textSample, textSample.r);
+        gridColor = mix(gridColor, TEXT_COLOR * textSample, textSample.r);
     }
 
     // 🏆 **Fusion finale : background + grille + cibles**
-    vec3 finalColor = backgroundColor + mix(gridColor, mapColor, height);
+    vec3 finalColor = BACKGROUND_COLOR + mix(gridColor, mapColor, height) * lightIntensity;
 
     gl_FragColor = vec4(finalColor, 1.0);
 }
