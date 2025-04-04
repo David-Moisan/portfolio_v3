@@ -8,6 +8,7 @@ import Animation from '../utils/animation';
 import { TextGeometry } from 'three/examples/jsm/Addons';
 import { TargetData, TargetModalData } from '../types/targetProjectType';
 import UIModal from './UIModal';
+import gsap from 'gsap';
 
 export default class TargetProject {
     public targets: TargetData[] = []
@@ -38,9 +39,9 @@ export default class TargetProject {
     private initTargets() {
         const positions = [
             { x: 0.13, y: 0.08, z: -0.34, title: "JOB STATS" },
-            { x: -0.853, y: 0.08, z: -0.698, title: "ALIGN TYPE" },
-            { x: 0.501, y: 0.08, z: -0.853, title: "ANCIENT TEMPLE" },
-            { x: -0.891, y: 0.08, z: 0.385, title: "VERONA PROJECT" },
+            { x: -0.472, y: 0.08, z: -0.317, title: "ALIGN TYPE" },
+            { x: 0.501, y: 0.096999, z: -0.853, title: "ANCIENT TEMPLE" },
+            { x: -0.891, y: 0.08, z: 0.351, title: "VERONA PROJECT" },
             { x: 0.733, y: 0.08, z: 0.965, title: "PORT FOLIO V2" }
         ]
 
@@ -157,6 +158,7 @@ export default class TargetProject {
 
             if (targetGroup) {
                 const targetIndex = this.meshes.indexOf(targetGroup)
+                this.flyToTarget(targetIndex)
                 this.showModal(targetIndex)
             }
         })
@@ -257,5 +259,22 @@ export default class TargetProject {
             Animation.fadeOut(this.titleMesh);
             this.titleMesh = null;
         }
+    }
+
+    private flyToTarget(targetIndex: number) {
+        const target = this.targets[targetIndex]
+
+        if (!target) return
+
+        const camera = this.experience.camera.instance
+        const controls = this.experience.camera.controls
+
+        const zoomPosition = new THREE.Vector3(
+            target.position.x * 1.5,
+            target.position.y + 0.5,
+            target.position.z + 1.5
+        )
+
+        Animation.flyTo(camera, controls, zoomPosition, target)
     }
 }
