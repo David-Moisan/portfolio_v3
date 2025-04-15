@@ -8,12 +8,15 @@ import World from '../components/World'
 import Resources from '../utils/resources'
 import { sources } from '../types/sources'
 import Debug from '../utils/debug'
+import Terminal from '../components/Terminal'
+import Router from '../utils/router'
+import AudioManager from '../utils/audioManager'
 
 // Singleton
 let instance: Experience | null = null
 
 export default class Experience {
-    public sizes: Sizes = new Sizes()
+    public sizes: Sizes = new Sizes("#map_container")
     public time: Time = new Time()
     public scene: THREE.Scene = new THREE.Scene()
     public camera!: Camera
@@ -22,12 +25,16 @@ export default class Experience {
     public world!: World
     public debug!: Debug
     public debugFolder!: GUI
+    public terminal!: Terminal
+    public router!: Router
 
     constructor(public canvas: HTMLCanvasElement) {
         if (instance) {
             return instance
         }
         instance = this
+
+        AudioManager.playBackgroundMusic()
 
         //ANCHOR - Options
         this.canvas = canvas
@@ -38,6 +45,8 @@ export default class Experience {
         this.resources = new Resources(sources)
         this.world = new World(this)
         this.debug = new Debug(this)
+        this.terminal = new Terminal(this)
+        this.router = new Router(this)
 
         if (this.debug.active) {
             this.debugFolder = this.debug.debugger.addFolder('General Settings')
@@ -63,32 +72,4 @@ export default class Experience {
         this.camera.update()
         this.renderer.update()
     }
-
-    // destroy() {
-    //     this.sizes.off('resize')
-    //     this.time.off('tick')
-
-    //     // Traverse the whole scene
-    //     this.scene.traverse((child: any) => {
-    //         if (child instanceof THREE.Mesh) {
-    //             child.geometry.dispose()
-
-    //             // Loop through the material properties
-    //             for (const key in child.material) {
-    //                 const value = child.material[key]
-
-    //                 if (value && typeof value.dispose === 'function') {
-    //                     value.dispose()
-    //                 }
-    //             }
-    //         }
-    //     })
-
-    //     this.camera.controls.dispose()
-    //     this.renderer.instance.dispose()
-
-    //     if (this.debug.active) {
-    //         this.debug.debugger.destroy()
-    //     }
-    // }
 }

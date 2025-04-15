@@ -8,7 +8,6 @@ import Animation from '../utils/animation';
 import { TextGeometry } from 'three/examples/jsm/Addons';
 import { TargetData, TargetModalData } from '../types/targetProjectType';
 import UIModal from './UIModal';
-import gsap from 'gsap';
 
 export default class TargetProject {
     public targets: TargetData[] = []
@@ -38,11 +37,11 @@ export default class TargetProject {
 
     private initTargets() {
         const positions = [
-            { x: 0.13, y: 0.08, z: -0.34, title: "JOB STATS" },
-            { x: -0.472, y: 0.08, z: -0.317, title: "ALIGN TYPE" },
-            { x: 0.501, y: 0.096999, z: -0.853, title: "ANCIENT TEMPLE" },
-            { x: -0.891, y: 0.08, z: 0.351, title: "VERONA PROJECT" },
-            { x: 0.733, y: 0.08, z: 0.965, title: "PORT FOLIO V2" }
+            { x: -0.37, y: 0.08, z: -0.34, title: "JOB STATS" },
+            { x: -0.972, y: 0.08, z: -0.317, title: "ALIGN TYPE" },
+            { x: 0.001, y: 0.096999, z: -0.853, title: "ANCIENT TEMPLE" },
+            { x: -1.391, y: 0.08, z: 0.351, title: "VERONA PROJECT" },
+            { x: 0.233, y: 0.08, z: 0.965, title: "PORT FOLIO V2" }
         ]
 
         this.targets = positions.map(pos => ({
