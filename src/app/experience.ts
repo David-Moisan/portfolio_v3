@@ -8,8 +8,8 @@ import World from '../components/World'
 import Resources from '../utils/resources'
 import { sources } from '../types/sources'
 import Debug from '../utils/debug'
-import Terminal from '@/components/Terminal'
-import Router from '@/utils/router'
+import Terminal from '../components/Terminal'
+import Router from '../utils/router'
 
 // Singleton
 let instance: Experience | null = null
