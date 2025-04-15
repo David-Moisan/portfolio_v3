@@ -81,6 +81,7 @@ export default class Map {
 
     setMesh() {
         this.mesh = new THREE.Mesh(this.geometry, this.material)
+        this.mesh.position.x = -0.5
         this.mesh.rotation.x = BASIC_ROTATION
         this.experience.scene.add(this.mesh)
     }

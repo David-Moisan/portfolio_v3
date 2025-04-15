@@ -9,9 +9,6 @@ const terminalScreen = document.querySelector('.terminal_container') as HTMLElem
 const mapScreen = document.getElementById("map_container") as HTMLElement
 const profileScreen = document.getElementById("profile_container") as HTMLElement
 
-const terminal = document.getElementById('terminal') as HTMLElement
-const inputField = document.getElementById('input') as HTMLInputElement
-
 const initAppUI = () => {
     terminalScreen.style.display = 'none'
     mapScreen.style.display = 'none'
