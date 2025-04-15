@@ -11,6 +11,7 @@ import Debug from '../utils/debug'
 import Terminal from '../components/Terminal'
 import Router from '../utils/router'
 import AudioManager from '../utils/audioManager'
+import Profile from '../components/Profile'
 
 // Singleton
 let instance: Experience | null = null
@@ -27,6 +28,8 @@ export default class Experience {
     public debugFolder!: GUI
     public terminal!: Terminal
     public router!: Router
+    public profileScene?: Profile
+    public currentScene: "map" | "profile" = "map"
 
     constructor(public canvas: HTMLCanvasElement) {
         if (instance) {
@@ -63,13 +66,32 @@ export default class Experience {
 
     }
 
+    public initProfileScene() {
+        this.profileScene = new Profile(this)
+    }
+
+    public setScene(name: "map" | "profile") {
+        this.currentScene = name
+
+        if (name === "profile" && !this.profileScene) {
+            this.initProfileScene()
+        }
+    }
+
     resize() {
         this.camera.resize()
         this.renderer.resize()
     }
 
     update() {
-        this.camera.update()
-        this.renderer.update()
+        if (this.currentScene === "map") {
+            this.camera.update()
+            this.renderer.instance.render(this.scene, this.camera.instance)
+        }
+
+        if (this.currentScene === "profile" && this.profileScene) {
+            this.profileScene.update()
+            this.renderer.instance.render(this.profileScene.scene, this.profileScene.camera)
+        }
     }
 }

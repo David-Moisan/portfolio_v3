@@ -17,6 +17,11 @@ export default class Router {
                 document.body.classList.add('map_active')
                 setDisplay("map_container", "flex")
                 setDisplay("profile_container", "none")
+
+                if (this.experience.profileScene) {
+                    this.experience.setScene("map")
+                }
+
                 break
             case "profil": 
                 this.experience.terminal.minimizeScreen()
@@ -24,6 +29,11 @@ export default class Router {
                 setDisplay("terminal_container", "block")
                 setDisplay("profile_container", "flex")
                 setDisplay("map_container", "none")
+
+                if (!this.experience.profileScene) {
+                    this.experience.setScene("profile")
+                }
+
                 break
         }
 

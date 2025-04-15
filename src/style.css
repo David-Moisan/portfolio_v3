@@ -273,21 +273,42 @@ body {
     left: 30vw;
 }
 
+/* Carte de profil */
 #profile_container {
-    background: #000;
-    color: #38bdf8;
-    align-items: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 70vw;
+    height: 100vh;
+    display: flex;
     justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle, rgba(8, 13, 20, 0.9) 0%, rgba(0, 0, 0, 0.85) 100%);
+    z-index: 5;
     margin-left: 30vw;
 }
 
-/* Carte de profil */
 .profile-card {
-    background: var(--background-color);
+    background: rgba(0, 255, 255, 0.1);
     border: 1px solid #38bdf8;
     padding: var(--spacing-large);
-    border-radius: 10px;
+    border-radius: 0.89rem;
+    color: #0ff;
+    font-family: var(--font-sofia);
+    font-size: 1rem;
+    text-align: left;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
     max-width: 400px;
+}
+
+.profile-card a {
+    color: #0ff;
+    text-decoration: underline;
+}
+
+.profile-card a:hover {
+    color: #0ff6;
 }
 
 /* En-tête de la carte */
@@ -385,8 +406,11 @@ body {
     position: fixed;
     top: 0;
     left: 0;
+    width: 100vw;
+    height: 100vh;
     outline: none;
-    z-index: 0; /**ajout */
+    z-index: 1;
+    pointer-events: none;
 }
 
 /** Animation */
