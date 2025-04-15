@@ -8,6 +8,8 @@ import World from '../components/World'
 import Resources from '../utils/resources'
 import { sources } from '../types/sources'
 import Debug from '../utils/debug'
+import Terminal from '@/components/Terminal'
+import Router from '@/utils/router'
 
 // Singleton
 let instance: Experience | null = null
@@ -22,6 +24,8 @@ export default class Experience {
     public world!: World
     public debug!: Debug
     public debugFolder!: GUI
+    public terminal!: Terminal
+    public router!: Router
 
     constructor(public canvas: HTMLCanvasElement) {
         if (instance) {
@@ -38,6 +42,8 @@ export default class Experience {
         this.resources = new Resources(sources)
         this.world = new World(this)
         this.debug = new Debug(this)
+        this.terminal = new Terminal(this)
+        this.router = new Router(this)
 
         if (this.debug.active) {
             this.debugFolder = this.debug.debugger.addFolder('General Settings')

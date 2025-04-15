@@ -9,12 +9,48 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <div class="header-source">
-        <span>SOURCE: CIA</span>
-        <span>SOURCE: FBI</span>
-        <span>SOURCE: U.S. STATE DEPARTMENT</span>
-    </div>
-    <canvas class="webgl"></canvas>
+    <!-- Loader -->
+    <section class="loading_screen">
+        <header>
+            <h1 class="loading_screen__title">PORTFOLIO 
+                <span class="loading_screen__title--detail">// V3</span>
+            </h1>
+            <p class="loading_screen__subtitle">LOADING</p>
+        </header>
+
+        <div>
+            <p>
+                PRODUCED BY // PHI&CODE
+            </p>
+        </div>
+    </section>
+
+    <section class="terminal_container">
+        <div id="terminal">
+            <div id="terminal-output">
+                <p>Type <strong>"help"</strong> to see the commands.</p>
+            </div>
+            <div class="input-line">
+                <span class="prompt">$</span>
+                <input type="text" id="input" autofocus>
+            </div>
+        </div>
+    </section>
+
+    <section id="profile_container">
+        <div class="profile-card">
+            <h2>Special Agent</h2>
+        </div>
+    </section>
+
+    <section id="map_container">
+        <div class="header-source">
+            <span>SOURCE: CIA</span>
+            <span>SOURCE: FBI</span>
+            <span>SOURCE: U.S. STATE DEPARTMENT</span>
+        </div>
+        <canvas class="webgl"></canvas>
+    </section>
     <script type="module" src="./index.ts"></script>
 </body>
 </html>

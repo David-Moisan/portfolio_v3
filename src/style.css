@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Sofia+Sans+Semi+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap');
 
+:root {
+    --font-sofia: 'Sofia Sans Semi Condensed', serif;
+
+    --background-color: #151515;
+    --text-color: rgba(196, 197, 190, 1);
+    --blue-color: rgba(26, 179, 204, 1);
+    --green-color: #438d79;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -9,6 +18,111 @@ html,
 body {
     overflow: hidden;
     font-size: 16px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--font-sofia);
+}
+
+/* LOADING */
+.loading_screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    flex-direction: column;
+    padding: 4rem;
+    margin-right: auto;
+    margin-left: auto;
+    z-index: 1000;
+    transition: opacity 0.5s ease;
+}
+
+.loading_screen__title {
+    letter-spacing: 0.0618rem;
+    font-size: 2.6875rem;
+    font-weight: 700;
+}
+
+.loading_screen__title > .loading_screen__title--detail {
+    font-weight: 400;
+}
+
+.loading_screen__subtitle {
+    font-weight: 500;
+    letter-spacing: 0.0618rem;
+    text-align: right;
+    color: var(--green-color);
+}
+
+.loading_screen__subtitle::after {
+    content: '';
+    display: inline-block;
+    animation: loadingDots 1.618s infinite;
+}
+
+@keyframes loadingDots {
+    0% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+    100% { content: ''; }
+}
+
+/** APP */
+#map_container, #profile_container, .terminal_container {
+    display: none;
+}
+
+.terminal_container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--background-color);
+    color: var(--green-color);
+    font-family: monospace;
+    padding: 20px;
+    overflow-y: auto;
+    transition: width 0.5s, height 0.5s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+#input {
+    font-size: 1rem;
+    padding: 0.5rem;
+    width: 100%;
+}
+
+.input-line {
+    display: flex;
+}
+
+.prompt {
+    color: cyan;
+    margin-right: 2.5px;
+    padding: 0.5rem;
+}
+
+input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: monospace;
+    outline: none;
+    width: 100%;
+}
+
+input::after {
+    content: '|';
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }
 
 .webgl {
@@ -29,7 +143,7 @@ body {
     color: #fff;
     z-index: 100;
     font-weight: 700;
-    font-family: 'Sofia Sans Semi Condensed', serif;
+    font-family: var(--font-sofia);
     margin: 1.618rem 1rem;
 }
 
@@ -44,7 +158,7 @@ body {
     border-left: 13px solid rgba(26, 179, 204, 0.7);
     padding: 21px;
     color: #cccccc;
-    font-family: 'Sofia Sans Semi Condensed', serif;
+    font-family: var(--font-sofia);
     font-size: 1.6rem;
     box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
     transform: translateY(20px);
