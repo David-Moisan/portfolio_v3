@@ -1,4 +1,4 @@
-import Experience from "@/app/experience"
+import Experience from "../app/experience"
 import { wait } from "../utils/ui"
 import AudioManager from "../utils/audioManager"
 import SFXManager from "../utils/sfxManager"
@@ -6,7 +6,6 @@ import SFXManager from "../utils/sfxManager"
 type TerminalCommand = (args?: string[]) => void
 
 export default class Terminal {
-    private experience!: Experience
     private container!: HTMLElement
     private output!: HTMLElement
     private input!: HTMLInputElement
@@ -15,58 +14,91 @@ export default class Terminal {
     private historyIndex: number = -1
 
     constructor(experience: Experience) {
-        this.experience = experience
+        this.createDOMStructure()
+        this.setupCommands(experience)
+        this.setupInput()
+    }
 
-        this.container = document.querySelector('.terminal_container') as HTMLElement
-        this.output = document.getElementById("terminal-output") as HTMLElement
-        this.input = document.getElementById("input") as HTMLInputElement
+    private createDOMStructure() {
+        // Main container
+        this.container = document.createElement("section")
+        this.container.className = "terminal_container"
 
-        if (!this.container || !this.output || !this.input) {
-            throw new Error("Terminal elements not found")
-        }
+        // Terminal Block
+        const terminal = document.createElement("div")
+        terminal.id = "terminal"
 
+        // Output area
+        this.output = document.createElement("div")
+        this.output.id = "terminal-output"
+        this.output.innerHTML = `
+            <p class="terminal-output_header">
+                Type <strong>"help"</strong> to see the commands.
+            </p>
+        `
+
+        terminal.appendChild(this.output)
+
+        // Input line
+        const inputLine = document.createElement("div")
+        inputLine.className = "input-line"
+
+        const prompt = document.createElement("span")
+        prompt.className = "prompt"
+        prompt.textContent = "agent@blackcell:~$"
+
+        this.input = document.createElement("input")
+        this.input.type = "text"
+        this.input.id = "input"
+        this.input.autofocus = true
+
+        inputLine.appendChild(prompt)
+        inputLine.appendChild(this.input)
+
+        terminal.appendChild(inputLine)
+
+        // Scanline overlay
+        const overlay = document.createElement("div")
+        overlay.className = "scanlines-overlay"
+
+        this.container.appendChild(terminal)
+        this.container.appendChild(overlay)
+
+        // Append to DOM
+        document.body.appendChild(this.container)
+    }
+
+    private setupCommands(experience: Experience) {
         this.commands = {
             help: this.printHelp.bind(this),
             clear: this.clear.bind(this),
             projects: async () => {
-                // await this.printLoadingBar()
-                await this.simulateBootProcess()
-                await this.simulateStreamingLogs()
+                // await this.simulateBootProcess()
+                // await this.simulateStreamingLogs()
                 experience.router.navigate("projects")
             },
             profil: () => experience.router.navigate("profil"),
             home: () => experience.router.navigate("home"),
-            ls: () => {
-                this.printLine("home/ projects/ profil/ about.txt")
-            },
+            ls: () => this.printLine("home/ projects/ profil/ about.txt"),
             cd: (args = []) => {
-                if (!args.length) {
-                    this.printLine("cd: Missing argument")
-                    return
-                }
-
-                const path = args[0]
-                if (path === 'projects' || path === 'profil' || path === 'home') {
-                    this.printLine(`📂 Changing directory to ${path}/`)
+                const target = args[0]
+                if (!target) return this.printLine("cd: Missing argument")
+                if (["projects", "profil", "home"].includes(target)) {
+                    this.printLine(`📂 Changing directory to ${target}/`)
                 } else {
-                    this.printLine(`cd: no such file or directory: ${path}`)
+                    this.printLine(`cd: no such file or directory: ${target}`)
                 }
             },
             cat: (args = []) => {
                 const file = args[0]
                 if (file === 'about.txt') {
-                    this.printLine("🧠 Agent phi_and_code\n🛠️ Code. Design. Mission.")
+                    this.printLine("🧠 Agent phi_and_code\n🛠️ Mission : find the famous name of map in Call of Duty Black Ops 1 end with Town.")
                 } else {
                     this.printLine(`cat: ${file}: No such file`)
                 }
             },
-            history: () => {
-                this.history.forEach((cmd, i) => this.printLine(`${i + 1}  ${cmd}`))
-            },
             audio: (args = []) => {
-                const settings = args[0]
-
-                if(settings === 'on') {
+                if(args[0] === 'on') {
                     AudioManager.playBackgroundMusic()
                 } else {
                     AudioManager.stopBackgroundMusic()
@@ -75,8 +107,6 @@ export default class Terminal {
             next: () => AudioManager.nextBackgroundMusic(),
             nuke: () => this.triggerNukeSequence()
         }
-
-        this.setupInput()
     }
 
     private setupInput() {
@@ -161,30 +191,21 @@ export default class Terminal {
 
     private printHelp() {
         this.printLine("📖 List of commands :")
-        Object.entries(this.commands).forEach(([cmd]) => {
-            if (cmd === 'help') {
-                this.printLine(`❓ ${cmd} : List of commands`)
-            } else if (cmd === 'clear') {
-                this.printLine(`🧹 ${cmd} : Clean the terminal`)
-            } else if (cmd === 'projects') {
-                this.printLine(`📍 ${cmd} : Open the interactive map`)
-            } else if (cmd === 'profil') {
-                this.printLine(`🕵🏻 ${cmd} : Show agent card`)
-            } else if (cmd === 'ls') {
-                this.printLine(`🗃️ ${cmd} : Show directory`)
-            } else if (cmd === 'cat') {
-                this.printLine(`📄 ${cmd} : Read a mysterious file`)
-            } else if (cmd === 'home') {
-                this.printLine(`🏠 ${cmd} : Come back safely`)
-            } else if (cmd === 'cd') {
-                this.printLine(`🔀 ${cmd} : Change directory`)
-            } else if (cmd === 'history') {
-                this.printLine(`💾 ${cmd} : List of all commands`)
-            } else if (cmd === 'audio') {
-                this.printLine(`🔊 ${cmd} : Active audio or stop`)
-            } else if (cmd === 'next') {
-                this.printLine(`🔊 ${cmd} : Next song of tracklist`)
+        Object.entries(this.commands).forEach(([key]) => {
+            const desc = {
+                clear: "🧹 Clean the terminal",
+                projects: "📍 Open the interactive map",
+                profil: "🕵🏻 Show agent card",
+                ls: "🗃️ List directory",
+                cd: "🔀 Change directory",
+                cat: "📄 Read a file (mysterious)",
+                home: "🏠 Come back safely",
+                audio: "🔊 Active/Stop audio",
+                next: "🔊 Next song of tracklist"
             }
+
+            const description = desc[key as keyof typeof desc] || "No description"
+            this.printLine(`> ${key} - ${description}`)
         })
     }
 

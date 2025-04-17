@@ -289,7 +289,6 @@ body {
 }
 
 .profile-card {
-    background: rgba(0, 255, 255, 0.1);
     border: 1px solid #38bdf8;
     padding: var(--spacing-large);
     border-radius: 0.89rem;
@@ -333,7 +332,7 @@ body {
 .ui-modal {
     position: fixed;
     bottom: 34px;
-    left: 34px;
+    right: 34px;
     width: 377px;
     background-color: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(4px);
@@ -406,11 +405,7 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
     outline: none;
-    z-index: 1;
-    pointer-events: none;
 }
 
 /** Animation */

@@ -4,11 +4,10 @@ import Time from "../utils/time"
 import Sizes from "../utils/sizes"
 import Camera from './camera'
 import Renderer from './renderer'
-import World from '../components/World'
+import World from '../core/World'
 import Resources from '../utils/resources'
 import { sources } from '../types/sources'
 import Debug from '../utils/debug'
-import Terminal from '../components/Terminal'
 import Router from '../utils/router'
 import AudioManager from '../utils/audioManager'
 import Profile from '../components/Profile'
@@ -17,7 +16,7 @@ import Profile from '../components/Profile'
 let instance: Experience | null = null
 
 export default class Experience {
-    public sizes: Sizes = new Sizes("#map_container")
+    public sizes: Sizes = new Sizes()
     public time: Time = new Time()
     public scene: THREE.Scene = new THREE.Scene()
     public camera!: Camera
@@ -26,7 +25,6 @@ export default class Experience {
     public world!: World
     public debug!: Debug
     public debugFolder!: GUI
-    public terminal!: Terminal
     public router!: Router
     public profileScene?: Profile
     public currentScene: "map" | "profile" = "map"
@@ -48,7 +46,6 @@ export default class Experience {
         this.resources = new Resources(sources)
         this.world = new World(this)
         this.debug = new Debug(this)
-        this.terminal = new Terminal(this)
         this.router = new Router(this)
 
         if (this.debug.active) {
@@ -86,6 +83,7 @@ export default class Experience {
     update() {
         if (this.currentScene === "map") {
             this.camera.update()
+            this.camera.controls.update()
             this.renderer.instance.render(this.scene, this.camera.instance)
         }
 

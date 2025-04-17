@@ -6,6 +6,7 @@ export default class Profile {
     public scene!: THREE.Scene
     private loader!: GLTFLoader
     public camera!: THREE.PerspectiveCamera
+    public container!: HTMLElement
     private model: THREE.Object3D | null = null
 
     constructor(private experience: Experience) {
@@ -14,6 +15,7 @@ export default class Profile {
         this.loader = new GLTFLoader()
         this.camera = new THREE.PerspectiveCamera(45, this.experience.sizes.width / this.experience.sizes.height, 0.1, 100)
         this.camera.position.set(0, 1.4, 2)
+        this.container = this.createDOMStructure()
 
         this.loadModel()
 
@@ -33,8 +35,9 @@ export default class Profile {
                     })
                 }
             })
-            this.model.scale.set(1, 1, 1)
-            this.model.position.y = -1
+            this.model.scale.setScalar(0.4)
+            this.model.position.set(0, 0.5, 0)
+            this.camera.position.set(-0.25, 1.2, 2.2)
 
             this.scene.add(this.model)
         })
@@ -43,6 +46,29 @@ export default class Profile {
     private onResize() {
         this.camera.aspect = this.experience.sizes.width / this.experience.sizes.height
         this.camera.updateProjectionMatrix()
+    }
+
+    private createDOMStructure(): HTMLElement {
+        const section = document.createElement("section")
+        section.id = "profile_container"
+
+        section.innerHTML = `
+            <div id="profil_wrapper">
+                <div class="profile-card">
+                    <h2>AGENT // PHI & CODE</h2>
+                    <p><strong>Name :</strong> David Moisan</p>
+                    <p><strong>Code Name :</strong> PHI_AND_CODE</p>
+                    <p><strong>Skills :</strong> TS / Three.js / WebGL / Rust / Node / PHP</p>
+                    <p><strong>Last Location :</strong> 🇫🇷 France</p>
+                    <p><strong>Contact :</strong> <a href="mailto:davprocode@gmail.com">☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎</a></p>
+                </div>
+                <canvas class="profil_canvas"></canvas>
+            </div>
+        `
+
+        section.style.display = "flex"
+        document.body.appendChild(section)
+        return section
     }
 
     public update() {
