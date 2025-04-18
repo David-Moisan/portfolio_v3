@@ -77,13 +77,13 @@ export default class Terminal {
                 // await this.simulateStreamingLogs()
                 experience.router.navigate("projects")
             },
-            profil: () => experience.router.navigate("profil"),
+            profile: () => experience.router.navigate("profile"),
             home: () => experience.router.navigate("home"),
-            ls: () => this.printLine("home/ projects/ profil/ about.txt"),
+            ls: () => this.printLine("home/ projects/ profile/ about.txt"),
             cd: (args = []) => {
                 const target = args[0]
                 if (!target) return this.printLine("cd: Missing argument")
-                if (["projects", "profil", "home"].includes(target)) {
+                if (["projects", "profile", "home"].includes(target)) {
                     this.printLine(`📂 Changing directory to ${target}/`)
                 } else {
                     this.printLine(`cd: no such file or directory: ${target}`)
@@ -195,7 +195,7 @@ export default class Terminal {
             const desc = {
                 clear: "🧹 Clean the terminal",
                 projects: "📍 Open the interactive map",
-                profil: "🕵🏻 Show agent card",
+                profile: "🕵🏻 Show agent card",
                 ls: "🗃️ List directory",
                 cd: "🔀 Change directory",
                 cat: "📄 Read a file (mysterious)",

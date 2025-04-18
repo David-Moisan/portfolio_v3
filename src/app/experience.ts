@@ -28,6 +28,7 @@ export default class Experience {
     public router!: Router
     public profileScene?: Profile
     public currentScene: "map" | "profile" = "map"
+    private wasOnProfile: boolean = false
 
     constructor(public canvas: HTMLCanvasElement) {
         if (instance) {
@@ -83,10 +84,16 @@ export default class Experience {
             this.camera.update()
             this.camera.controls.update()
             this.renderer.instance.render(this.scene, this.camera.instance)
+            this.wasOnProfile = false
         }
 
         if (this.currentScene === "profile" && this.profileScene) {
             this.profileScene.update()
+
+            if (!this.wasOnProfile) {
+                this.profileScene.startScan()
+                this.wasOnProfile = true
+            }
             this.renderer.instance.render(this.profileScene.scene, this.profileScene.camera)
         }
     }

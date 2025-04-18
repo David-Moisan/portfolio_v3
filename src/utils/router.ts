@@ -22,7 +22,7 @@ export default class Router {
                 this.experience.setScene("map")
                 this.experience.camera.enableControls(true)
                 break
-            case "profil": 
+            case "profile": 
                 this.experience.setScene("profile")
                 this.experience.camera.enableControls(false)
                 this.experience.world.terminal.minimizeScreen()

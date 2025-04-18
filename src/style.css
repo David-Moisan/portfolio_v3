@@ -306,7 +306,8 @@ body {
     font-family: var(--font-sofia);
     font-size: 1rem;
     text-align: left;
-    backdrop-filter: blur(8px);
+    background: var(--background-color);
+    backdrop-filter: blur(13px);
     box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
     max-width: 400px;
 }
