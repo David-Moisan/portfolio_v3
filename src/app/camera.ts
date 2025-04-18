@@ -34,6 +34,14 @@ export default class Camera {
         this.controls.minDistance = 1 
         this.controls.maxDistance = 100
         this.controls.maxPolarAngle = Math.PI / 2.75
+
+        setTimeout(() => {
+            this.experience.canvas.focus()
+        }, 100)
+    }
+
+    enableControls(enabled: boolean) {
+        this.controls.enabled = enabled
     }
 
     resize() {

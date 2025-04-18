@@ -4,19 +4,19 @@ import Time from "../utils/time"
 import Sizes from "../utils/sizes"
 import Camera from './camera'
 import Renderer from './renderer'
-import World from '../components/World'
+import World from '../core/World'
 import Resources from '../utils/resources'
 import { sources } from '../types/sources'
 import Debug from '../utils/debug'
-import Terminal from '../components/Terminal'
 import Router from '../utils/router'
 import AudioManager from '../utils/audioManager'
+import Profile from '../components/Profile'
 
 // Singleton
 let instance: Experience | null = null
 
 export default class Experience {
-    public sizes: Sizes = new Sizes("#map_container")
+    public sizes: Sizes = new Sizes()
     public time: Time = new Time()
     public scene: THREE.Scene = new THREE.Scene()
     public camera!: Camera
@@ -25,8 +25,9 @@ export default class Experience {
     public world!: World
     public debug!: Debug
     public debugFolder!: GUI
-    public terminal!: Terminal
     public router!: Router
+    public profileScene?: Profile
+    public currentScene: "map" | "profile" = "map"
 
     constructor(public canvas: HTMLCanvasElement) {
         if (instance) {
@@ -45,7 +46,6 @@ export default class Experience {
         this.resources = new Resources(sources)
         this.world = new World(this)
         this.debug = new Debug(this)
-        this.terminal = new Terminal(this)
         this.router = new Router(this)
 
         if (this.debug.active) {
@@ -53,23 +53,41 @@ export default class Experience {
             this.debugFolder.add(this.camera.controls, 'enabled').name('Controls Enabled')
         }
 
-        this.sizes.on('resize', () => {
-            this.resize()
-        })
+        this.sizes.on('resize', () => this.resize())
+        this.time.on('tick', () => this.update())
+    }
 
-        this.time.on('tick', () => {
-            this.update()
-        })
+    public setScene(name: "map" | "profile") {
+        this.currentScene = name
 
+        if (name === "profile" && !this.profileScene) {
+            this.initProfileScene()
+        }
+    }
+
+    public initProfileScene() {
+        this.profileScene = new Profile(this)
     }
 
     resize() {
         this.camera.resize()
         this.renderer.resize()
+
+        if (this.currentScene === "profile" && this.world.profile) {
+            this.world.profile.resize()
+        }
     }
 
     update() {
-        this.camera.update()
-        this.renderer.update()
+        if (this.currentScene === "map") {
+            this.camera.update()
+            this.camera.controls.update()
+            this.renderer.instance.render(this.scene, this.camera.instance)
+        }
+
+        if (this.currentScene === "profile" && this.profileScene) {
+            this.profileScene.update()
+            this.renderer.instance.render(this.profileScene.scene, this.profileScene.camera)
+        }
     }
 }

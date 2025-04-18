@@ -8,19 +8,25 @@ export default class Router {
         document.body.classList.remove('profile_active', 'map_active')
         switch (route) {
             case "home":
-                this.experience.terminal.showFullScreen()
+                this.experience.world.terminal.showFullScreen()
                 setDisplay("map_container", "none")
                 setDisplay("profile_container", "none")
                 break
             case "projects": 
-                this.experience.terminal.minimizeScreen()
+                this.experience.world.terminal.minimizeScreen()
                 document.body.classList.add('map_active')
+
                 setDisplay("map_container", "flex")
                 setDisplay("profile_container", "none")
+
+                this.experience.setScene("map")
+                this.experience.camera.enableControls(true)
                 break
             case "profil": 
-                this.experience.terminal.minimizeScreen()
-                document.body.classList.add('profile_active')
+                this.experience.setScene("profile")
+                this.experience.camera.enableControls(false)
+                this.experience.world.terminal.minimizeScreen()
+
                 setDisplay("terminal_container", "block")
                 setDisplay("profile_container", "flex")
                 setDisplay("map_container", "none")

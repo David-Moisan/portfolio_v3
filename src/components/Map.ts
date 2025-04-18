@@ -12,14 +12,14 @@ export default class Map {
     public mesh!: THREE.Mesh
     public debugFolder!: GUI
     public helper!: THREE.AxesHelper
+    public container!: HTMLElement
 
     constructor(public experience: Experience) {
-
+        this.container = this.createDOMStructure();
+        
         // Debug
         if (this.experience.debug.active) {
             this.debugFolder = this.experience.debug.debugger.addFolder('Map Params')
-            // this.helper = new THREE.AxesHelper(5)
-            // this.experience.scene.add(this.helper)
         }
 
         this.setGeometry()
@@ -84,5 +84,26 @@ export default class Map {
         this.mesh.position.x = -0.5
         this.mesh.rotation.x = BASIC_ROTATION
         this.experience.scene.add(this.mesh)
+    }
+
+    createDOMStructure(): HTMLElement {
+        const wrapper = document.getElementById("map_wrapper")
+        const headerSource = document.createElement("div")
+        headerSource.classList.add("header-source")
+        
+        if (wrapper) {
+            headerSource.innerHTML = `
+                <span>SOURCE: CIA</span>
+                <span>SOURCE: FBI</span>
+                <span>SOURCE: U.S. STATE DEPARTMENT</span>
+            `
+        }
+
+            
+
+        headerSource.style.display = "flex"
+
+        wrapper!.appendChild(headerSource)
+        return headerSource
     }
 }

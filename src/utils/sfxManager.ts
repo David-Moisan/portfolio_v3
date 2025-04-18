@@ -1,3 +1,5 @@
+import AudioManager from "./audioManager"
+
 export default class SFXManager {
     private static basePath = "/sounds/sfx/"
     private static volume = 0.2
@@ -16,6 +18,7 @@ export default class SFXManager {
     }
 
     static playNukeSound() {
+        AudioManager.stopBackgroundMusic()
         const audio = new Audio(`${this.basePath}uk_nuke_alarm.mp3`)
         audio.volume = 0.1
         audio.play().catch(err => {
@@ -29,6 +32,10 @@ export default class SFXManager {
         audio.play().catch(err => {
             console.warn("SFX nuke failed", err)
         })
+
+        setTimeout(() => {
+            AudioManager.playBackgroundMusic()
+        }, 400)
     }
 
     static playTypeSound() {

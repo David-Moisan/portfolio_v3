@@ -9,64 +9,11 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <!-- Loader -->
-    <section class="loading_screen">
-        <header>
-            <h1 class="loading_screen__title">PORTFOLIO 
-                <span class="loading_screen__title--detail">// V3</span>
-            </h1>
-            <p class="loading_screen__subtitle">LOADING</p>
-        </header>
-
-        <div>
-            <p>
-                PRODUCED BY // PHI&CODE
-            </p>
-        </div>
-    </section>
-
-    <section class="terminal_container">
-        <div id="terminal">
-            <div id="terminal-output">
-                <p class="terminal-output_header">
-                    Type <strong>"help"</strong> to see the commands.
-                </p>
-            </div>
-            <div class="input-line">
-                <span class="prompt">agent@blackcell:~$</span>
-                <input type="text" id="input" autofocus>
-            </div>
-        </div>
-        <div class="scanlines-overlay"></div>
-    </section>
-
-    <section id="profile_container">
-        <div class="profile-card">
-            <h2>Special Agent</h2>
-            <p>Nom : David Moisan</p>
-            <p>Mission : Frontend/Creative Developer</p>
-            <p>Location : France</p>
-        </div>
-    </section>
-
     <section id="map_container">
         <div id="map_wrapper">
-            <div class="header-source">
-                <span>SOURCE: CIA</span>
-                <span>SOURCE: FBI</span>
-                <span>SOURCE: U.S. STATE DEPARTMENT</span>
-            </div>
             <canvas class="webgl"></canvas>
         </div>
     </section>
-    
-    <div id="glitch-overlay" class="glitch-overlay" style="display: none;">
-        <div class="glitch" data-text="404 SYSTEM FAILURE">404 SYSTEM FAILURE</div>
-        <div class="glow">404 SYSTEM FAILURE</div>
-        <p class="subtitle">REBOOTING SEQUENCE</p>
-        <div class="scanlines"></div>
-    </div>
-    
     <script type="module" src="./index.ts"></script>
 </body>
 </html>
