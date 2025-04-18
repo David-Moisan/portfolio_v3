@@ -17,6 +17,14 @@ export default class SFXManager {
         })
     }
 
+    static playScanSound() {
+        const audio = new Audio(`${this.basePath}sci-fi-sound.mp3`)
+        audio.volume = 0.2
+        audio.play().catch(err => {
+            console.warn("SFX scan failed", err)
+        })
+    }
+
     static playNukeSound() {
         AudioManager.stopBackgroundMusic()
         const audio = new Audio(`${this.basePath}uk_nuke_alarm.mp3`)
