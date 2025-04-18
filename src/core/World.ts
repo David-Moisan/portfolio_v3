@@ -4,6 +4,7 @@ import Loader from "../components/Loader";
 import Map from "../components/Map";
 import TargetProject from "../components/TargetProject";
 import Terminal from "../components/Terminal";
+import Profile from "../components/Profile";
 
 export default class World {
     public map!: Map
@@ -11,6 +12,7 @@ export default class World {
     public terminal!: Terminal
     public loader!: Loader
     public secret!: NukeOverlay
+    public profile!: Profile
 
     constructor(public experience: Experience) {
 
@@ -21,5 +23,11 @@ export default class World {
             this.terminal = new Terminal(this.experience)
             this.secret = new NukeOverlay(this.experience)
         })
+    }
+
+    public initProfile(): void {
+        if (!this.profile) {
+            this.profile = new Profile(this.experience)
+        }
     }
 }

@@ -16,11 +16,10 @@ export default class Map {
 
     constructor(public experience: Experience) {
         this.container = this.createDOMStructure();
+        
         // Debug
         if (this.experience.debug.active) {
             this.debugFolder = this.experience.debug.debugger.addFolder('Map Params')
-            // this.helper = new THREE.AxesHelper(5)
-            // this.experience.scene.add(this.helper)
         }
 
         this.setGeometry()

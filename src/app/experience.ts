@@ -53,18 +53,8 @@ export default class Experience {
             this.debugFolder.add(this.camera.controls, 'enabled').name('Controls Enabled')
         }
 
-        this.sizes.on('resize', () => {
-            this.resize()
-        })
-
-        this.time.on('tick', () => {
-            this.update()
-        })
-
-    }
-
-    public initProfileScene() {
-        this.profileScene = new Profile(this)
+        this.sizes.on('resize', () => this.resize())
+        this.time.on('tick', () => this.update())
     }
 
     public setScene(name: "map" | "profile") {
@@ -75,9 +65,17 @@ export default class Experience {
         }
     }
 
+    public initProfileScene() {
+        this.profileScene = new Profile(this)
+    }
+
     resize() {
         this.camera.resize()
         this.renderer.resize()
+
+        if (this.currentScene === "profile" && this.world.profile) {
+            this.world.profile.resize()
+        }
     }
 
     update() {
