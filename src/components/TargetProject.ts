@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import GUI from "lil-gui";
 import Experience from "@/app/experience";
-import { BASIC_ROTATION } from '../types/transformation';
 import Raycaster from '../utils/raycaster';
 import { COLORS, OPACITIES } from '../types/style';
 import Animation from '../utils/animation';
@@ -31,22 +30,25 @@ export default class TargetProject {
         this.loadFont()
         this.initTargets()
         this.createMeshes()
+        this.createScannerNetworkEffect()
         this.initModalData()
         this.setupInteractivity()
     }
 
     private initTargets() {
+        const offset = 3
+        const offsetZ = 2
         const positions = [
-            { x: -0.37, y: 0.08, z: -0.34, title: "JOB STATS" },
-            { x: -0.972, y: 0.08, z: -0.317, title: "ALIGN TYPE" },
-            { x: 0.001, y: 0.096999, z: -0.853, title: "ANCIENT TEMPLE" },
-            { x: -1.391, y: 0.08, z: 0.351, title: "VERONA PROJECT" },
-            { x: 0.233, y: 0.08, z: 0.965, title: "PORT FOLIO V2" }
+            { x: -0.37 * offset, y: 0.08 * offsetZ, z: -0.34 * offset, title: "JOB STATS" },
+            { x: -0.972 * offset, y: 0.08 * offsetZ, z: -0.317 * offset, title: "ALIGN TYPE" },
+            { x: 0.001 * offset, y: 0.096999 * offsetZ, z: -0.853 * offset, title: "ANCIENT TEMPLE" },
+            { x: -1.391 * offset, y: 0.08 * offsetZ, z: 0.351 * offset, title: "VERONA PROJECT" },
+            { x: 0.233 * offset, y: 0.08 * offsetZ, z: 0.965 * offset, title: "PORT FOLIO V2" }
         ]
 
         this.targets = positions.map(pos => ({
             title: pos.title,
-            position: new THREE.Vector3(pos.x, pos.y, pos.z)
+            position: new THREE.Vector3(-pos.x, pos.y, -pos.z)
         }))
     }
 
@@ -73,7 +75,12 @@ export default class TargetProject {
             const circleGeometry = new THREE.CircleGeometry(radius / 2, segments)
             const circle = new THREE.Mesh(circleGeometry, material)
 
-            group.rotation.x = BASIC_ROTATION
+            group.rotation.set(
+                -Math.PI / 2,
+                0,
+                Math.PI
+            )
+        
             group.add(ring, circle)
             group.position.copy(target.position)
 
@@ -82,10 +89,179 @@ export default class TargetProject {
             Animation.rotate(ring, 34)
             Animation.blink(group, 0.8, 1)
 
-            this.experience.scene.add(group)
+            this.experience.rootGroup.add(group)
             this.meshes.push(group)
 
         })
+    }
+
+    private createScannerNetworkEffect() {
+        const group = new THREE.Group()
+    
+        const primaryPositions: THREE.Vector3[] = this.targets.map(t => t.position.clone())
+        const extraCount = 50
+        const extraPositions: THREE.Vector3[] = []
+    
+        for (let i = 0; i < extraCount; i++) {
+            const a = primaryPositions[Math.floor(Math.random() * primaryPositions.length)]
+            const b = primaryPositions[Math.floor(Math.random() * primaryPositions.length)]
+            const t = Math.random()
+            const pos = new THREE.Vector3().lerpVectors(a, b, t)
+            pos.x += (Math.random() - 0.5) * 4.5
+            pos.z += (Math.random() - 0.5) * 4.5
+            extraPositions.push(pos)
+        }
+    
+        const allPoints = [...primaryPositions, ...extraPositions]
+        const pointArray = new Float32Array(allPoints.length * 3)
+    
+        allPoints.forEach((pos, i) => {
+            pointArray[i * 3 + 0] = pos.x
+            pointArray[i * 3 + 1] = pos.y
+            pointArray[i * 3 + 2] = pos.z
+        })
+    
+        const pointGeometry = new THREE.BufferGeometry()
+        pointGeometry.setAttribute('position', new THREE.BufferAttribute(pointArray, 3))
+    
+        const pointMaterial = new THREE.PointsMaterial({
+            size: 0.07,
+            color: 0x1ab3cc,
+            transparent: true,
+            opacity: 0.6,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+        })
+    
+        const points = new THREE.Points(pointGeometry, pointMaterial)
+        group.add(points)
+    
+        // === 🔗 Lignes entre points principaux
+        const mainConnections: THREE.Vector3[] = []
+    
+        this.targets.forEach((target, i) => {
+            const others = this.targets.slice()
+            others.splice(i, 1)
+            const closest = others
+                .map(o => ({
+                    pos: o.position,
+                    dist: target.position.distanceTo(o.position)
+                }))
+                .sort((a, b) => a.dist - b.dist)
+                .slice(0, 2)
+    
+            closest.forEach(({ pos }) => {
+                mainConnections.push(target.position.clone(), pos.clone())
+            })
+        })
+    
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints(mainConnections)
+        const baseLineArray = lineGeometry.attributes.position.array.slice()
+        const lineColorArray = new Float32Array(mainConnections.length * 3)
+    
+        const lineMaterial = new THREE.LineBasicMaterial({
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.5,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+        })
+    
+        const lines = new THREE.LineSegments(lineGeometry, lineMaterial)
+        lineGeometry.setAttribute('color', new THREE.BufferAttribute(lineColorArray, 3))
+        group.add(lines)
+    
+        // === 🔗 Réseau secondaire relié au réseau principal
+        const miniConnections: THREE.Vector3[] = []
+    
+        extraPositions.forEach((extra) => {
+            const closestPrimary = primaryPositions.reduce((closest, current) => {
+                const dist = extra.distanceTo(current)
+                return dist < closest.dist ? { pos: current, dist } : closest
+            }, { pos: primaryPositions[0], dist: Infinity })
+    
+            miniConnections.push(extra.clone(), closestPrimary.pos.clone())
+    
+            const others = extraPositions.filter(p => p !== extra)
+            const closestExtras = others
+                .map(p => ({
+                    pos: p,
+                    dist: extra.distanceTo(p)
+                }))
+                .sort((a, b) => a.dist - b.dist)
+                .slice(0, 2)
+    
+            closestExtras.forEach(({ pos }) => {
+                miniConnections.push(extra.clone(), pos.clone())
+            })
+        })
+    
+        const miniGeometry = new THREE.BufferGeometry().setFromPoints(miniConnections)
+        const miniMaterial = new THREE.LineBasicMaterial({
+            color: new THREE.Color(1.0, 0.7, 0.2),
+            transparent: true,
+            opacity: 0.2,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+        })
+    
+        const miniLines = new THREE.LineSegments(miniGeometry, miniMaterial)
+        group.add(miniLines)
+    
+        // === 🌊 Animation radar + pulsation
+        const waveRange = 2.5
+        const pulseSpeed = 2.0
+    
+        const animate = () => {
+            const time = performance.now() * 0.001
+    
+            // Pulsation points
+            const pulse = 0.6 + Math.sin(time * 2) * 0.3
+            pointMaterial.opacity = pulse
+    
+            // Animation lignes principales ondulées XZ
+            const posAttr = lineGeometry.getAttribute('position') as THREE.BufferAttribute
+            const colorAttr = lineGeometry.getAttribute('color') as THREE.BufferAttribute
+    
+            for (let i = 0; i < posAttr.count; i++) {
+                const baseX = baseLineArray[i * 3 + 0] as number
+                const baseY = baseLineArray[i * 3 + 1] as number
+                const baseZ = baseLineArray[i * 3 + 2] as number
+    
+                const offsetX = Math.sin(time * 3 + i) * 0.05
+                const offsetZ = Math.cos(time * 3 + i) * 0.05
+    
+                posAttr.setXYZ(i, baseX + offsetX, baseY, baseZ + offsetZ)
+            }
+    
+            posAttr.needsUpdate = true
+    
+            // 🔸 Onde radar qui modifie la couleur des lignes principales
+            const waveCenter = new THREE.Vector3(0, 0, 0)
+            const waveRadius = (time * pulseSpeed) % waveRange
+            const connections = [...mainConnections, ...miniConnections]
+
+            for (let i = 0; i < connections.length; i += 2) {
+                const a = connections[i]
+                const b = connections[i + 1]
+                const mid = new THREE.Vector3().addVectors(a, b).multiplyScalar(0.5)
+    
+                const dist = waveCenter.distanceTo(mid)
+                const intensity = Math.max(0.0, 1.0 - Math.abs(dist - waveRadius))
+    
+                const baseColor = new THREE.Color(1, 0.6, 0.1).lerp(new THREE.Color(1, 1, 0.5), intensity)
+    
+                colorAttr.setXYZ(i * 3 + 0, baseColor.r, baseColor.g, baseColor.b)
+                colorAttr.setXYZ(i * 3 + 1, baseColor.r, baseColor.g, baseColor.b)
+            }
+    
+            colorAttr.needsUpdate = true
+    
+            requestAnimationFrame(animate)
+        }
+    
+        animate()
+        this.experience.rootGroup.add(group)
     }
 
     private initModalData() {
@@ -157,7 +333,7 @@ export default class TargetProject {
 
             if (targetGroup) {
                 const targetIndex = this.meshes.indexOf(targetGroup)
-                this.flyToTarget(targetIndex)
+                // this.flyToTarget(targetIndex)
                 this.showModal(targetIndex)
             }
         })
@@ -197,12 +373,12 @@ export default class TargetProject {
         )
 
         Animation.fadeIn(this.titleLine)
-        this.experience.scene.add(this.titleLine)
+        this.experience.rootGroup.add(this.titleLine)
 
         // Text
         const textGeometry = new TextGeometry(title, {
             font: this.font,
-            size: 0.03,
+            size: 0.05,
             depth: 0.01,
             curveSegments: 12
         })
@@ -230,8 +406,9 @@ export default class TargetProject {
             0,
             Math.PI
         )
-
-        this.experience.scene.add(this.titleMesh)
+        
+        this.titleMesh.lookAt(this.experience.camera.instance.position)
+        this.experience.rootGroup.add(this.titleMesh)
     }
 
     private showModal(targetIndex: number) {
@@ -258,22 +435,5 @@ export default class TargetProject {
             Animation.fadeOut(this.titleMesh);
             this.titleMesh = null;
         }
-    }
-
-    private flyToTarget(targetIndex: number) {
-        const target = this.targets[targetIndex]
-
-        if (!target) return
-
-        const camera = this.experience.camera.instance
-        const controls = this.experience.camera.controls
-
-        const zoomPosition = new THREE.Vector3(
-            target.position.x * 1.5,
-            target.position.y + 0.5,
-            target.position.z + 1.5
-        )
-
-        Animation.flyTo(camera, controls, zoomPosition, target)
     }
 }

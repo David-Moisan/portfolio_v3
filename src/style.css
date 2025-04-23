@@ -345,22 +345,32 @@ body {
     bottom: 34px;
     right: 34px;
     width: 377px;
-    background-color: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(4px);
-    border-right: 13px solid rgba(26, 179, 204, 0.7);
-    border-left: 13px solid rgba(26, 179, 204, 0.7);
+    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.7), rgba(8, 21, 31, 0.85));
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-right: 13px solid #0ff;
+    border-left: 13px solid #0ff;
     padding: 21px;
     color: #cccccc;
     box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+    z-index: 1000;
+
     transform: translateY(20px);
     opacity: 0;
-    transition: all 0.3s ease-out;
-    z-index: 1000;
+
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
 
 .ui-modal.visible {
     transform: translateY(0);
     opacity: 1;
+}
+
+.ui-modal.ui-modal.visible .modal-content > * {
+    animation: fadeInStagger 0.4s ease-out forwards;
+    animation-delay: calc(var(--i, 0) * 0.05s);
+    opacity: 0;
+    transform: translateY(10px);
 }
 
 .modal-header {
@@ -386,15 +396,25 @@ body {
 }
 
 .modal-close {
-    color: rgba(255, 255, 255, 0.8);
-    background: none;
-    border: none;
+    color: #0ff;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid #0ff6;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
     cursor: pointer;
     transition: all 0.3s ease-out;
 }
 
 .modal-close:hover {
-    color: var(--blue-color);
+    background-color: rgba(0, 255, 255, 0.2);
+    transform: rotate(90deg);
+    color: #0ff;
 }
 
 .modal-link {
@@ -405,6 +425,8 @@ body {
     text-transform: uppercase;
     background-color: rgba(26, 179, 204, 0.7);
     transition: background-color 0.3s ease-in;
+    letter-spacing: 0.05em;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
 }
 
 .modal-link:hover {
@@ -472,5 +494,12 @@ body {
     }
     100% {
         transform: translateY(2%);
+    }
+}
+
+@keyframes fadeInStagger {
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

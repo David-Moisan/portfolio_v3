@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons'
 import Experience from "./experience";
+import Animation from '../utils/animation';
 
 export default class Camera {
     public instance!: THREE.PerspectiveCamera
     public controls!: OrbitControls
+    private hasPlayedIntro: boolean = false
 
     constructor(public experience: Experience) {
         this.experience = experience
@@ -22,9 +24,14 @@ export default class Camera {
             this.experience.sizes.width / this.experience.sizes.height, 
             0.1, 
             100
-        )
-        this.instance.position.set(0, 1, -2.08)
-        this.experience.scene.add(this.instance)
+        )  
+
+        this.instance.position.set(0, 8, 0)
+        this.instance.lookAt(0, 0, 0)
+
+        if (this.experience.rootGroup) {
+            this.experience.rootGroup.add(this.instance)
+        }
     }
 
     setOrbitControls() {
@@ -38,6 +45,17 @@ export default class Camera {
         setTimeout(() => {
             this.experience.canvas.focus()
         }, 100)
+    }
+
+    playIntroAnimation(onComplete?: () => void) {
+        if (this.hasPlayedIntro) return;
+        this.hasPlayedIntro = true
+
+        // Disable controls
+        this.controls.enabled = false
+
+        // Animation
+        Animation.cinematic(this.instance, this.controls, onComplete)
     }
 
     enableControls(enabled: boolean) {

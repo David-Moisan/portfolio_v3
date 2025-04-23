@@ -1,7 +1,7 @@
 export const COLORS = {
     primary: "rgb(26, 179, 204)",
     hover: "rgb(255, 100, 100)",
-    background: "rgb(0, 0, 0)"
+    background: 0x1a1a2e
 }
 
 export const OPACITIES = {

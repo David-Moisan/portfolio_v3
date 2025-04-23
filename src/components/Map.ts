@@ -19,6 +19,12 @@ export default class Map {
         
         // Debug
         if (this.experience.debug.active) {
+
+            const axesHelper = new THREE.AxesHelper(5)
+            this.experience.rootGroup.add(axesHelper)
+
+            const gridHelper = new THREE.GridHelper(10, 10)
+            this.experience.rootGroup.add(gridHelper)
             this.debugFolder = this.experience.debug.debugger.addFolder('Map Params')
         }
 
@@ -29,7 +35,7 @@ export default class Map {
     }
 
     setGeometry() {
-        this.geometry = new THREE.PlaneGeometry(2.5, 2.5, 256, 256)
+        this.geometry = new THREE.PlaneGeometry(10, 10, 512, 512)
     }
 
     setTextures() {
@@ -61,29 +67,32 @@ export default class Map {
         this.material = new THREE.ShaderMaterial({
             vertexShader: vertex,
             fragmentShader: fragment,
-            // wireframe: true,
             uniforms: {
-                uTime: { value:  0},
+                uTime: { value: 0 },
                 uMap: { value: this.textures.material },
                 uGridTexture: { value: this.textures.gridMaterial },
                 uNormalMap: { value: this.textures.normalMap },
-                uElevationScale: { value: 0.28 },
-                uNormalStrength: { value: 1.59 }
-            },
+                uElevationScale: { value: 0.34 },
+                uNormalStrength: { value: 0.55 }
+            }
         })
-
+        
         if (this.experience.debug.active) {
             this.debugFolder.add(this.material.uniforms.uElevationScale, 'value').min(0).max(1).step(0.01).name('Elevation Scale')
             this.debugFolder.add(this.material, 'wireframe').name('Wireframe')
             this.debugFolder.add(this.material.uniforms.uNormalStrength, 'value').min(0).max(10).step(0.01).name('Detail Normal Scale')
+            this.debugFolder.add(this.experience.camera.instance.position, 'x').min(-10).max(10).step(0.01)
+            this.debugFolder.add(this.experience.camera.instance.position, 'y').min(-10).max(10).step(0.01)
+            this.debugFolder.add(this.experience.camera.instance.position, 'z').min(-10).max(10).step(0.01)
         }
     }
 
     setMesh() {
         this.mesh = new THREE.Mesh(this.geometry, this.material)
-        this.mesh.position.x = -0.5
+        this.mesh.position.x = 1.50
+        this.mesh.rotation.z = Math.PI
         this.mesh.rotation.x = BASIC_ROTATION
-        this.experience.scene.add(this.mesh)
+        this.experience.rootGroup.add(this.mesh)
     }
 
     createDOMStructure(): HTMLElement {
@@ -98,8 +107,6 @@ export default class Map {
                 <span>SOURCE: U.S. STATE DEPARTMENT</span>
             `
         }
-
-            
 
         headerSource.style.display = "flex"
 

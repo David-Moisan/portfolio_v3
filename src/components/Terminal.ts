@@ -71,7 +71,6 @@ export default class Terminal {
     private setupCommands(experience: Experience) {
         this.commands = {
             help: this.printHelp.bind(this),
-            clear: this.clear.bind(this),
             projects: async () => {
                 // await this.simulateBootProcess()
                 // await this.simulateStreamingLogs()
@@ -79,6 +78,7 @@ export default class Terminal {
             },
             profile: () => experience.router.navigate("profile"),
             home: () => experience.router.navigate("home"),
+            clear: this.clear.bind(this),
             ls: () => this.printLine("home/ projects/ profile/ about.txt"),
             cd: (args = []) => {
                 const target = args[0]

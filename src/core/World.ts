@@ -5,6 +5,7 @@ import Map from "../components/Map";
 import TargetProject from "../components/TargetProject";
 import Terminal from "../components/Terminal";
 import Profile from "../components/Profile";
+import Camera from "../app/camera";
 
 export default class World {
     public map!: Map
@@ -13,13 +14,23 @@ export default class World {
     public loader!: Loader
     public secret!: NukeOverlay
     public profile!: Profile
+    public mapCamera!: Camera
 
     constructor(public experience: Experience) {
 
         this.experience.resources.on('ready', () => {
             this.loader = new Loader(this.experience)
+
+            this.mapCamera = this.experience.camera
             this.map = new Map(this.experience)
             this.target = new TargetProject(this.experience)
+
+            setTimeout(() => {
+                this.mapCamera.playIntroAnimation(() => {
+                    console.log('Cinematic done. Controls enabled.')
+                })
+            }, 4000)
+
             this.terminal = new Terminal(this.experience)
             this.secret = new NukeOverlay(this.experience)
         })

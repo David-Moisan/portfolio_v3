@@ -127,4 +127,80 @@ export default class Animation {
             }
         })
     }
+
+    static cinematic(
+        camera: THREE.PerspectiveCamera,
+        controls: OrbitControls,
+        onComplete?: () => void
+    ) {
+        controls.enabled = false;
+    
+        const center = new THREE.Vector3(0, 0, 0);
+        const startPos = new THREE.Vector3(0, 8, 0);
+        const midPos = new THREE.Vector3(0, 3, 0);
+        const endPos = new THREE.Vector3(1.5, 1, 6);
+        const endLookAt = new THREE.Vector3(-1.5, 0, 0);
+    
+        // --- SETUP initial sans animation ---
+        camera.position.copy(startPos);
+        controls.target.copy(center);
+        camera.lookAt(center);
+        camera.updateMatrixWorld();
+    
+        // --- Setup dummy rotation
+        const dummy = new THREE.Object3D();
+        dummy.position.copy(startPos);
+        dummy.lookAt(center);
+        const startQuat = dummy.quaternion.clone();
+    
+        dummy.position.copy(endPos);
+        dummy.lookAt(endLookAt);
+        const endQuat = dummy.quaternion.clone();
+    
+        // --- Timeline
+        const timeline = gsap.timeline({
+            defaults: { ease: "power2.inOut" },
+            onComplete: () => {
+                controls.enabled = true;
+    
+                // 🔒 Ne surtout pas forcer target ou lookAt ici
+                // -> ça override le quaternion final
+                // camera.lookAt(endLookAt); ← Supprimé
+                // controls.target.copy(endLookAt); ← Supprimé
+                onComplete?.();
+            }
+        });
+    
+        // Phase 1 – Pause satellite
+        timeline.to({}, { duration: 0.6 });
+    
+        // Phase 2 – Zoom vertical (sans toucher au quaternion !)
+        const yRef = { value: startPos.y };
+        timeline.to(yRef, {
+            value: midPos.y,
+            duration: 1.2,
+            onUpdate: () => {
+                camera.position.set(0, yRef.value, 0);
+                camera.updateMatrixWorld();
+            }
+        });
+    
+        // Phase 3 – Interpolation position + rotation
+        const t = { value: 0 };
+        timeline.to(t, {
+            value: 1,
+            duration: 2.2,
+            ease: "power2.inOut",
+            onUpdate: () => {
+                // Position fluide
+                camera.position.lerpVectors(midPos, endPos, t.value);
+    
+                // Rotation fluide
+                const interpolated = new THREE.Quaternion().copy(startQuat).slerp(endQuat, t.value);
+                camera.quaternion.copy(interpolated);
+    
+                camera.updateMatrixWorld();
+            }
+        });
+    }
 }
