@@ -63,7 +63,6 @@ export default class TargetProject {
             const material = new THREE.MeshBasicMaterial({
                 color: COLORS.primary,
                 transparent: true,
-                opacity: OPACITIES.default,
                 depthWrite: false
             })
 
@@ -107,8 +106,8 @@ export default class TargetProject {
             const b = primaryPositions[Math.floor(Math.random() * primaryPositions.length)]
             const t = Math.random()
             const pos = new THREE.Vector3().lerpVectors(a, b, t)
-            pos.x += (Math.random() - 0.5) * 4.5
-            pos.z += (Math.random() - 0.5) * 4.5
+            pos.x += (Math.random() - 0.5) * 4
+            pos.z += (Math.random() - 0.5) * 4
             extraPositions.push(pos)
         }
     
@@ -136,7 +135,7 @@ export default class TargetProject {
         const points = new THREE.Points(pointGeometry, pointMaterial)
         group.add(points)
     
-        // === 🔗 Lignes entre points principaux
+        // === 🔗 Lignes principales
         const mainConnections: THREE.Vector3[] = []
     
         this.targets.forEach((target, i) => {
@@ -171,7 +170,7 @@ export default class TargetProject {
         lineGeometry.setAttribute('color', new THREE.BufferAttribute(lineColorArray, 3))
         group.add(lines)
     
-        // === 🔗 Réseau secondaire relié au réseau principal
+        // === 🔗 Réseau secondaire (neurones)
         const miniConnections: THREE.Vector3[] = []
     
         extraPositions.forEach((extra) => {
@@ -197,8 +196,11 @@ export default class TargetProject {
         })
     
         const miniGeometry = new THREE.BufferGeometry().setFromPoints(miniConnections)
+        const miniBaseLineArray = miniGeometry.attributes.position.array.slice()
+        const miniColorArray = new Float32Array(miniConnections.length * 3)
+    
         const miniMaterial = new THREE.LineBasicMaterial({
-            color: new THREE.Color(1.0, 0.7, 0.2),
+            vertexColors: true,
             transparent: true,
             opacity: 0.2,
             depthWrite: false,
@@ -206,20 +208,19 @@ export default class TargetProject {
         })
     
         const miniLines = new THREE.LineSegments(miniGeometry, miniMaterial)
+        miniGeometry.setAttribute('color', new THREE.BufferAttribute(miniColorArray, 3))
         group.add(miniLines)
     
-        // === 🌊 Animation radar + pulsation
+        // === 🌊 Radar animation
         const waveRange = 2.5
         const pulseSpeed = 2.0
     
         const animate = () => {
             const time = performance.now() * 0.001
-    
-            // Pulsation points
             const pulse = 0.6 + Math.sin(time * 2) * 0.3
             pointMaterial.opacity = pulse
     
-            // Animation lignes principales ondulées XZ
+            // === Lignes principales - ondulation XZ
             const posAttr = lineGeometry.getAttribute('position') as THREE.BufferAttribute
             const colorAttr = lineGeometry.getAttribute('color') as THREE.BufferAttribute
     
@@ -233,29 +234,53 @@ export default class TargetProject {
     
                 posAttr.setXYZ(i, baseX + offsetX, baseY, baseZ + offsetZ)
             }
-    
             posAttr.needsUpdate = true
     
-            // 🔸 Onde radar qui modifie la couleur des lignes principales
+            // === Lignes secondaires - ondulation XZ
+            const miniPosAttr = miniGeometry.getAttribute('position') as THREE.BufferAttribute
+            for (let i = 0; i < miniPosAttr.count; i++) {
+                const baseX = miniBaseLineArray[i * 3 + 0] as number
+                const baseY = miniBaseLineArray[i * 3 + 1] as number
+                const baseZ = miniBaseLineArray[i * 3 + 2] as number
+    
+                const offsetX = Math.sin(time * 2.5 + i) * 0.02
+                const offsetZ = Math.cos(time * 2.5 + i) * 0.02
+    
+                miniPosAttr.setXYZ(i, baseX + offsetX, baseY, baseZ + offsetZ)
+            }
+            miniPosAttr.needsUpdate = true
+    
+            // === Radar Color effect
             const waveCenter = new THREE.Vector3(0, 0, 0)
             const waveRadius = (time * pulseSpeed) % waveRange
+    
             const connections = [...mainConnections, ...miniConnections]
-
+    
             for (let i = 0; i < connections.length; i += 2) {
                 const a = connections[i]
                 const b = connections[i + 1]
                 const mid = new THREE.Vector3().addVectors(a, b).multiplyScalar(0.5)
-    
                 const dist = waveCenter.distanceTo(mid)
                 const intensity = Math.max(0.0, 1.0 - Math.abs(dist - waveRadius))
     
-                const baseColor = new THREE.Color(1, 0.6, 0.1).lerp(new THREE.Color(1, 1, 0.5), intensity)
+                const baseColor = new THREE.Color(1, 0.6, 0.1).lerp(new THREE.Color(1, 1, 0.4), intensity)
     
-                colorAttr.setXYZ(i * 3 + 0, baseColor.r, baseColor.g, baseColor.b)
-                colorAttr.setXYZ(i * 3 + 1, baseColor.r, baseColor.g, baseColor.b)
+                if (i < mainConnections.length) {
+                    colorAttr.setXYZ(i * 3 + 0, baseColor.r, baseColor.g, baseColor.b)
+                    colorAttr.setXYZ(i * 3 + 1, baseColor.r, baseColor.g, baseColor.b)
+                } else {
+                    const j = i - mainConnections.length
+                    miniColorArray[j * 3 + 0] = baseColor.r
+                    miniColorArray[j * 3 + 1] = baseColor.g
+                    miniColorArray[j * 3 + 2] = baseColor.b
+                    miniColorArray[j * 3 + 3] = baseColor.r
+                    miniColorArray[j * 3 + 4] = baseColor.g
+                    miniColorArray[j * 3 + 5] = baseColor.b
+                }
             }
     
             colorAttr.needsUpdate = true
+            miniGeometry.attributes.color.needsUpdate = true
     
             requestAnimationFrame(animate)
         }

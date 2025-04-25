@@ -20,6 +20,15 @@ export default class Router {
                 setDisplay("profile_container", "none")
 
                 this.experience.setScene("map")
+
+                if (!this.experience.camera['hasPlayedIntro']) {
+                    this.experience.camera.playIntroAnimation(() => {
+                        console.log('Controls enabled.')
+                    }) 
+                } else {
+                    this.experience.camera.enableControls(true)
+                }
+
                 this.experience.camera.enableControls(true)
                 break
             case "profile": 

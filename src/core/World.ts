@@ -20,17 +20,8 @@ export default class World {
 
         this.experience.resources.on('ready', () => {
             this.loader = new Loader(this.experience)
-
-            this.mapCamera = this.experience.camera
             this.map = new Map(this.experience)
             this.target = new TargetProject(this.experience)
-
-            setTimeout(() => {
-                this.mapCamera.playIntroAnimation(() => {
-                    console.log('Cinematic done. Controls enabled.')
-                })
-            }, 4000)
-
             this.terminal = new Terminal(this.experience)
             this.secret = new NukeOverlay(this.experience)
         })
