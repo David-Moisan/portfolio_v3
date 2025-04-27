@@ -61,7 +61,7 @@ export default class TargetProject {
             const group = new THREE.Group()
 
             const material = new THREE.MeshBasicMaterial({
-                color: COLORS.primary,
+                color: COLORS.hover,
                 transparent: true,
                 depthWrite: false
             })
@@ -86,7 +86,6 @@ export default class TargetProject {
             // Animation
             Animation.pulse(circle, 1.1, 1.5)
             Animation.rotate(ring, 34)
-            Animation.blink(group, 0.8, 1)
 
             this.experience.rootGroup.add(group)
             this.meshes.push(group)
@@ -98,7 +97,7 @@ export default class TargetProject {
         const group = new THREE.Group()
     
         const primaryPositions: THREE.Vector3[] = this.targets.map(t => t.position.clone())
-        const extraCount = 50
+        const extraCount = 80
         const extraPositions: THREE.Vector3[] = []
     
         for (let i = 0; i < extraCount; i++) {
@@ -125,10 +124,7 @@ export default class TargetProject {
     
         const pointMaterial = new THREE.PointsMaterial({
             size: 0.07,
-            color: 0x1ab3cc,
-            transparent: true,
-            opacity: 0.6,
-            depthWrite: false,
+            color: 0xff6464,
             blending: THREE.AdditiveBlending
         })
     
@@ -218,7 +214,7 @@ export default class TargetProject {
         const animate = () => {
             const time = performance.now() * 0.001
             const pulse = 0.6 + Math.sin(time * 2) * 0.3
-            pointMaterial.opacity = pulse
+            lineMaterial.opacity = pulse
     
             // === Lignes principales - ondulation XZ
             const posAttr = lineGeometry.getAttribute('position') as THREE.BufferAttribute

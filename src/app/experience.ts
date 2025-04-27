@@ -11,7 +11,6 @@ import Debug from '../utils/debug'
 import Router from '../utils/router'
 import AudioManager from '../utils/audioManager'
 import Profile from '../components/Profile'
-import { Sky } from 'three/examples/jsm/Addons'
 
 // Singleton
 let instance: Experience | null = null
@@ -47,18 +46,15 @@ export default class Experience {
         this.camera = new Camera(this)
         this.renderer = new Renderer(this)
         this.resources = new Resources(sources)
+
         this.world = new World(this)
         this.debug = new Debug(this)
         this.router = new Router(this)
 
         // Group creation
         this.scene = new THREE.Scene()
-        this.createFogVolume()
-
         this.rootGroup = new THREE.Group()
-
         this.scene.add(this.rootGroup)
-
 
         if (this.debug.active) {
             this.debugFolder = this.debug.debugger.addFolder('General Settings')
@@ -67,21 +63,6 @@ export default class Experience {
 
         this.sizes.on('resize', () => this.resize())
         this.time.on('tick', () => this.update())
-    }
-
-    createFogVolume() {
-        const sky = new Sky()
-        sky.scale.setScalar(100)
-        this.scene.add(sky)
-
-        const skyUniforms = sky.material.uniforms
-        skyUniforms.turbidity.value = 10;
-        skyUniforms.rayleigh.value = 3; 
-        skyUniforms.mieCoefficient.value = 0.1;
-        skyUniforms.mieDirectionalG.value = 0.95;
-        skyUniforms.sunPosition.value.set(0.3, -0.038, -0.95)
-
-        this.scene.fog = new THREE.FogExp2(0x04343f, 0.1)
     }
 
     public setScene(name: "map" | "profile") {

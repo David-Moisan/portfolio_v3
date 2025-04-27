@@ -4,6 +4,7 @@ import Experience from "@/app/experience";
 import vertex from '../shaders/vertex.glsl'
 import fragment from '../shaders/fragment.glsl'
 import { BASIC_ROTATION } from '../types/transformation';
+import { RGBELoader } from 'three/examples/jsm/Addons';
 
 export default class Map {
     public geometry!: THREE.PlaneGeometry
@@ -28,10 +29,30 @@ export default class Map {
             this.debugFolder = this.experience.debug.debugger.addFolder('Map Params')
         }
 
+        this.setupEnvironment()
         this.setGeometry()
         this.setTextures()
         this.setMaterial()
         this.setMesh()
+    }
+
+    setupEnvironment() {
+        const loader = new RGBELoader()
+        const env = loader.load('textures/hdr/futuristic_command_center_2K.hdr')
+
+        if (env) {
+            env.mapping = THREE.EquirectangularReflectionMapping
+    
+            const envGeometry = new THREE.SphereGeometry(50, 64, 64)
+            const envMaterial = new THREE.MeshBasicMaterial({
+                map: env,
+                side: THREE.BackSide
+            })
+            const envMesh = new THREE.Mesh(envGeometry, envMaterial)
+            envMesh.position.y = -3
+            envMesh.position.x = -3
+            this.experience.rootGroup.add(envMesh)
+        }
     }
 
     setGeometry() {
@@ -67,13 +88,14 @@ export default class Map {
         this.material = new THREE.ShaderMaterial({
             vertexShader: vertex,
             fragmentShader: fragment,
+            wireframe: true,
             uniforms: {
                 uTime: { value: 0 },
                 uMap: { value: this.textures.material },
                 uGridTexture: { value: this.textures.gridMaterial },
                 uNormalMap: { value: this.textures.normalMap },
-                uElevationScale: { value: 0.34 },
-                uNormalStrength: { value: 0.55 }
+                uElevationScale: { value: 0.40 },
+                uNormalStrength: { value: 0.55 },
             }
         })
         

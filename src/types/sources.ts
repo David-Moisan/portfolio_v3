@@ -1,6 +1,6 @@
 export interface SourceType {
     name: string;
-    type: "texture" | "font";
+    type: "texture" | "font" | "hdr" | "gltf";
     path: string | string[];
 }
 
@@ -24,5 +24,15 @@ export const sources: SourceType[] = [
         name: 'uiFont',
         type: 'font',
         path: '/fonts/helvetiker_regular.typeface.json'
+    },
+    {
+        name: 'profileEnvironment',
+        type: 'hdr',
+        path: 'textures/hdr/futuristic_command_center_2K.hdr'
+    },
+    {
+        name: 'profileModel',
+        type: 'gltf',
+        path: '/models/gltf/LeePerrySmith.glb'
     }
 ]

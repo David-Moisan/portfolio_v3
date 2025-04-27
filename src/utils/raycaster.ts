@@ -61,7 +61,6 @@ export default class Raycaster extends EventEmitter {
     private onMouseEnter(object: THREE.Object3D) {
         if (object instanceof THREE.Mesh && object.material instanceof THREE.MeshBasicMaterial) {
             object.material.color.set(COLORS.hover)
-            object.material.opacity = OPACITIES.hover
         }
 
         document.body.style.cursor = CURSORS.POINTER
@@ -70,8 +69,7 @@ export default class Raycaster extends EventEmitter {
 
     private onMouseLeave(object: THREE.Object3D) {
         if (object instanceof THREE.Mesh && object.material instanceof THREE.MeshBasicMaterial) {
-            object.material.color.set(COLORS.primary)
-            object.material.opacity = OPACITIES.default
+            object.material.color.set(COLORS.hover)
         }
 
         document.body.style.cursor = CURSORS.DEFAULT

@@ -1,4 +1,4 @@
-import { FontLoader } from "three/examples/jsm/Addons";
+import { FontLoader, GLTFLoader, RGBELoader } from "three/examples/jsm/Addons";
 import { SourceType } from "../types/sources";
 import { EventEmitter } from "./eventEmitter";
 import * as THREE from 'three';
@@ -25,6 +25,8 @@ export default class Resources extends EventEmitter {
         this.loaders = {
             textureLoader: new THREE.TextureLoader(),
             fontLoader: new FontLoader(),
+            hdrLoader: new RGBELoader(),
+            gltfLoader: new GLTFLoader()
         }
     }
 
@@ -43,6 +45,23 @@ export default class Resources extends EventEmitter {
                     (font: any) => this.sourceLoaded(source, font),
                     undefined,
                     (error: ErrorEvent) => this.handleError(source, error) 
+                )
+            } else if (source.type === 'hdr') {
+                this.loaders.hdrLoader.load(
+                    source.path,
+                    (file: THREE.Texture) => {
+                        file.mapping = THREE.EquirectangularReflectionMapping
+                        this.sourceLoaded(source, file)
+                    },
+                    undefined,
+                    (error: ErrorEvent) => this.handleError(source, error)
+                )
+            } else if (source.type === "gltf") {
+                this.loaders.gltfLoader.load(
+                    source.path,
+                    (file: any) => this.sourceLoaded(source, file),
+                    undefined,
+                    (error: ErrorEvent) => this.handleError(source, error)
                 )
             }
         }
