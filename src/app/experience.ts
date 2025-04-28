@@ -18,7 +18,8 @@ let instance: Experience | null = null
 export default class Experience {
     public sizes: Sizes = new Sizes()
     public time: Time = new Time()
-    public scene: THREE.Scene = new THREE.Scene()
+    public scene!: THREE.Scene
+    public rootGroup!: THREE.Group
     public camera!: Camera
     public renderer!: Renderer
     public resources!: Resources
@@ -45,9 +46,15 @@ export default class Experience {
         this.camera = new Camera(this)
         this.renderer = new Renderer(this)
         this.resources = new Resources(sources)
+
         this.world = new World(this)
         this.debug = new Debug(this)
         this.router = new Router(this)
+
+        // Group creation
+        this.scene = new THREE.Scene()
+        this.rootGroup = new THREE.Group()
+        this.scene.add(this.rootGroup)
 
         if (this.debug.active) {
             this.debugFolder = this.debug.debugger.addFolder('General Settings')

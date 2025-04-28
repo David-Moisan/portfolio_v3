@@ -1,5 +1,5 @@
 import { TargetModalData } from "@/types/targetProjectType"
-import gsap from "gsap"
+import SFXManager from "../utils/sfxManager"
 
 export default class UIModal {
     public domElement!: HTMLDivElement
@@ -24,8 +24,8 @@ export default class UIModal {
                 <button id="modal-close" class="modal-close">✕</button>
             </div>
             <div class="modal-content">
-                <div class="modal-date"></div>
-                <p class="modal-description"></p>
+                <div class="modal-date" style="--i: 1;"></div>
+                <p class="modal-description" style="--i: 2;"></p>
             </div>
             <div class="modal-footer">
                 <a href="#" target="_blank" class="modal-link" style="display: none;">Open →</a>
@@ -71,47 +71,25 @@ export default class UIModal {
             linkEl.style.display = 'none'
         }
 
-        gsap.timeline()
-            .set(this.domElement, { display: 'block' })
-            .fromTo(this.domElement, 
-                { opacity: 0, y: 20}, 
-                {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.3,
-                    ease: "back.out(1.2)"
-                }
-            )
-            .from(this.domElement.querySelectorAll('*'), {
-                opacity: 0,
-                y: 10,
-                stagger: 0.05,
-                duration: 0.2
-            }, 0.1)
+        this.domElement.style.display = 'block'
+        requestAnimationFrame(() => {
+            SFXManager.playDataSound()
+            this.domElement.classList.add('visible')
+        })
 
-        this.isVisible = true
+        this.isVisible = true;
     }
 
     hide() {
-        gsap.timeline()
-        .to(this.domElement.querySelectorAll('*'), {
-            opacity: 0,
-            y: -10,
-            stagger: 0.02,
-            duration: 0.1
-        })
-        .to(this.domElement, {
-            opacity: 0,
-            y: 20,
-            duration: 0.2,
-            ease: "power2.in",
-            onComplete: () => {
-                this.domElement.innerHTML = ''
-                this.initDOM()
-                this.setupEventListeners()
-                this.domElement.style.display = 'none'
-            }
-        })
+        this.domElement.classList.remove('visible')
+
+        const transitionDuration = 300
+
+        setTimeout(() => {
+            this.domElement.style.display = 'none'
+            
+        }, transitionDuration)
+
         this.isVisible = false
     }
 

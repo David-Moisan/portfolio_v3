@@ -1,7 +1,7 @@
 import SFXManager from '../utils/sfxManager';
 import Experience from '../app/experience';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/Addons';
+import { GLTFLoader, RGBELoader } from 'three/examples/jsm/Addons';
 import profileVertex from "../shaders/profileVertex.glsl"
 import profileFragment from "../shaders/profileFragment.glsl"
 
@@ -32,6 +32,7 @@ export default class Profile {
         this.camera = new THREE.PerspectiveCamera(45, this.experience.sizes.width / this.experience.sizes.height, 0.1, 100)
         this.camera.position.set(0, 1.4, 2)
         this.container = this.createDOMStructure()
+        this.setupEnvironment()
         this.loadModel()
         
         this.canvas = this.container.querySelector("canvas.profil_canvas") as HTMLCanvasElement
@@ -48,6 +49,25 @@ export default class Profile {
         this.renderer.setClearColor(0x0f0f0f, 1)
 
         this.experience.time.on('tick', () => this.updateScan())
+    }
+
+    setupEnvironment() {
+        const loader = new RGBELoader()
+        const env = loader.load('textures/hdr/futuristic_command_center_2K.hdr')
+
+        if (env) {
+            env.mapping = THREE.EquirectangularReflectionMapping
+    
+            const envGeometry = new THREE.SphereGeometry(50, 64, 64)
+            const envMaterial = new THREE.MeshBasicMaterial({
+                map: env,
+                side: THREE.BackSide
+            })
+            const envMesh = new THREE.Mesh(envGeometry, envMaterial)
+            envMesh.position.y = -3
+            envMesh.position.x = -3
+            this.scene.add(envMesh)
+        }
     }
 
     private loadModel() {

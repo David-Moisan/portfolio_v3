@@ -5,6 +5,7 @@ import Map from "../components/Map";
 import TargetProject from "../components/TargetProject";
 import Terminal from "../components/Terminal";
 import Profile from "../components/Profile";
+import Camera from "../app/camera";
 
 export default class World {
     public map!: Map
@@ -13,6 +14,7 @@ export default class World {
     public loader!: Loader
     public secret!: NukeOverlay
     public profile!: Profile
+    public mapCamera!: Camera
 
     constructor(public experience: Experience) {
 
