@@ -3,7 +3,6 @@ import './style.css'
 import '../gsap-config'
 
 const showLoaderDuration = 3000
-const minLoaderDuration = 1500
 
 window.addEventListener("DOMContentLoaded", () => {
     const canvas = document.querySelector("canvas.webgl") as HTMLCanvasElement
@@ -15,7 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     experience.resources.on('ready', () => {
         const elapsed = Date.now() - startTime
-        const remainingTime = Math.max(0, minLoaderDuration - elapsed)
+        const remainingTime = Math.max(0, showLoaderDuration - elapsed)
 
         setTimeout(() => {
             const loader = document.querySelector('.loading_screen') as HTMLElement

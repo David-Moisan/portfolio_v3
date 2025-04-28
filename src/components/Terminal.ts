@@ -72,11 +72,14 @@ export default class Terminal {
         this.commands = {
             help: this.printHelp.bind(this),
             projects: async () => {
-                // await this.simulateBootProcess()
-                // await this.simulateStreamingLogs()
+                await this.simulateBootProcess()
+                await this.simulateStreamingLogs()
                 experience.router.navigate("projects")
             },
-            profile: () => experience.router.navigate("profile"),
+            profile: async () => {
+                await this.simulateBootProfileProcess()
+                experience.router.navigate("profile")
+            },
             home: () => experience.router.navigate("home"),
             clear: this.clear.bind(this),
             ls: () => this.printLine("home/ projects/ profile/ about.txt"),
@@ -209,6 +212,19 @@ export default class Terminal {
         })
     }
 
+    private async simulateBootProfileProcess(): Promise<void> {
+        const steps = [
+            '→ Initializing face context...',
+            '→ Loading profile data...',
+            '→ Scan ready to analyse ✔',
+        ];
+
+        for (const step of steps) {
+            await this.typeLine(step, 30)
+            await wait(300)
+        }
+    }
+
     private async simulateBootProcess(): Promise<void> {
         const steps = [
             '→ Initializing map context...',
@@ -218,8 +234,8 @@ export default class Terminal {
         ]
 
         for (const step of steps) {
-            await this.typeLine(step, 40)
-            await wait(600)
+            await this.typeLine(step, 30)
+            await wait(400)
         }
     }
 
@@ -239,7 +255,7 @@ export default class Terminal {
 
         for (const step of steps) {
             await this.typeLine(step, 20)
-            await wait(400)
+            await wait(300)
         }
     }
 

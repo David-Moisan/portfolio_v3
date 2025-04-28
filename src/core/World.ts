@@ -19,7 +19,7 @@ export default class World {
     constructor(public experience: Experience) {
 
         this.experience.resources.on('ready', () => {
-            // this.loader = new Loader(this.experience)
+            this.loader = new Loader(this.experience)
             this.map = new Map(this.experience)
             this.target = new TargetProject(this.experience)
             this.terminal = new Terminal(this.experience)
