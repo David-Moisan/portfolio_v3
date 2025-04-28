@@ -1,4 +1,5 @@
 import { TargetModalData } from "@/types/targetProjectType"
+import SFXManager from "../utils/sfxManager"
 
 export default class UIModal {
     public domElement!: HTMLDivElement
@@ -72,6 +73,7 @@ export default class UIModal {
 
         this.domElement.style.display = 'block'
         requestAnimationFrame(() => {
+            SFXManager.playDataSound()
             this.domElement.classList.add('visible')
         })
 
@@ -85,6 +87,7 @@ export default class UIModal {
 
         setTimeout(() => {
             this.domElement.style.display = 'none'
+            
         }, transitionDuration)
 
         this.isVisible = false

@@ -2,6 +2,7 @@ import { TargetData } from '@/types/targetProjectType';
 import gsap from 'gsap';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons';
+import SFXManager from './sfxManager';
 
 export default class Animation {
     static pulse(
@@ -97,43 +98,13 @@ export default class Animation {
         })
     }
 
-    static flyTo(
-        object: THREE.PerspectiveCamera,
-        controls: OrbitControls, 
-        zoomPosition: THREE.Vector3,
-        target: TargetData,
-        duration: number = 2
-    ) {
-        gsap.to(object.position, {
-            x: zoomPosition.x,
-            y: zoomPosition.y,
-            z: zoomPosition.z,
-            duration,
-            ease: "power2.inOut",
-            onUpdate: () => {
-                const lookAtTarget = new THREE.Vector3().copy(target.position)
-                object.lookAt(lookAtTarget)
-            }
-        })
-
-        gsap.to(controls.target, {
-            x: target.position.x,
-            y: target.position.y,
-            z: target.position.z,
-            duration,
-            ease: "power2.inOut",
-            onUpdate: () => {
-                controls.update()
-            }
-        })
-    }
-
     static cinematic(
         camera: THREE.PerspectiveCamera,
         controls: OrbitControls,
         onComplete?: () => void
     ) {
         controls.enabled = false
+        SFXManager.playZoomCameraSound()
     
         const center = new THREE.Vector3(0, 0, 0)
         const startPos = new THREE.Vector3(0, 8, 0)

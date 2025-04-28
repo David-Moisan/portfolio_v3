@@ -34,5 +34,15 @@ export const sources: SourceType[] = [
         name: 'profileModel',
         type: 'gltf',
         path: '/models/gltf/LeePerrySmith.glb'
+    },
+    {
+        name: 'cityModel',
+        type: 'gltf',
+        path: '/models/gltf/city.glb'
+    },
+    {
+        name: 'droneModel',
+        type: 'gltf',
+        path: '/models/gltf/drone.glb'
     }
 ]

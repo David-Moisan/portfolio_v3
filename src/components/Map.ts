@@ -4,7 +4,7 @@ import Experience from "@/app/experience";
 import vertex from '../shaders/vertex.glsl'
 import fragment from '../shaders/fragment.glsl'
 import { BASIC_ROTATION } from '../types/transformation';
-import { RGBELoader } from 'three/examples/jsm/Addons';
+import { RGBELoader, ThreeMFLoader } from 'three/examples/jsm/Addons';
 
 export default class Map {
     public geometry!: THREE.PlaneGeometry
@@ -34,6 +34,8 @@ export default class Map {
         this.setTextures()
         this.setMaterial()
         this.setMesh()
+        this.setCity()
+        this.setFakeHUD()
     }
 
     setupEnvironment() {
@@ -88,7 +90,7 @@ export default class Map {
         this.material = new THREE.ShaderMaterial({
             vertexShader: vertex,
             fragmentShader: fragment,
-            wireframe: true,
+            wireframe: false,
             uniforms: {
                 uTime: { value: 0 },
                 uMap: { value: this.textures.material },
@@ -115,6 +117,95 @@ export default class Map {
         this.mesh.rotation.z = Math.PI
         this.mesh.rotation.x = BASIC_ROTATION
         this.experience.rootGroup.add(this.mesh)
+    }
+
+    setCity() {
+        const cityGltf = this.experience.resources.items['cityModel'] as any
+        const cityScene = cityGltf.scene
+
+        cityScene.scale.setScalar(0.01)
+        cityScene.position.set(2.5, 0.1, 0)
+        cityScene.rotation.y = Math.PI // A voir
+
+        cityScene.traverse((child : any) => {
+            if (child.isMesh) {
+                child.material = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color(0x06151C),
+                    // wireframe: true,
+                    transparent: true,
+                    opacity: 0.6,
+                    depthWrite: false,
+                    blending: THREE.AdditiveBlending
+                })
+            }
+        })
+
+        this.experience.rootGroup.add(cityScene)
+    }
+
+    setFakeHUD() {
+        const group = new THREE.Group()
+
+         // === 2. Flux de Data Streams ===
+        const dataPoints = []
+        const streamMaterial = new THREE.PointsMaterial({
+            size: 0.01,
+            color: 0x00ffcc,
+            transparent: true,
+            opacity: 0.7,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+        })
+
+        for (let i = 0; i < 100; i++) {
+            const x = (Math.random() - 0.5) * 12
+            const z = (Math.random() - 0.5) * 10
+            const y = 0.1 + Math.random() * 0.5
+            dataPoints.push(new THREE.Vector3(x, y, z))
+        }
+
+        const dataGeom = new THREE.BufferGeometry().setFromPoints(dataPoints)
+        const dataStream = new THREE.Points(dataGeom, streamMaterial)
+        group.add(dataStream)
+
+        // === 5. Drones de scan tournants ===
+        const drones = [] as THREE.Object3D[]
+
+        const droneModel = (this.experience.resources.items.droneModel as any).scene
+
+        for (let i = 0; i < 3; i++) {
+            const drone = droneModel.clone()
+            drone.scale.set(0.05, 0.05, 0.05)
+            drone.position.set(
+                Math.cos(i * Math.PI * 2 / 3) * 2.0,
+                0.5,
+                Math.sin(i * Math.PI * 2 / 3) * 2.0
+            )
+
+            group.add(drone)
+            drones.push(drone)
+        }
+
+        this.experience.rootGroup.add(group)
+
+        // === 🎯 Animation interne
+        const animate = () => {
+            const time = performance.now() * 0.001
+
+            dataStream.position.y = Math.sin(time * 2.0) * 0.2
+
+            drones.forEach((drone: any, idx: number) => {
+                const angle = time + idx * 2
+                const radius = 2.0
+                drone.position.x = Math.cos(angle) * radius
+                drone.position.z = Math.sin(angle) * radius
+                drone.rotation.y = angle
+            })
+
+            requestAnimationFrame(animate)
+        }
+
+        animate()
     }
 
     createDOMStructure(): HTMLElement {

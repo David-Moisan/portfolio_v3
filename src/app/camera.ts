@@ -39,7 +39,7 @@ export default class Camera {
         this.controls.enableDamping = true
         this.controls.dampingFactor = 0.05
         this.controls.minDistance = 1 
-        this.controls.maxDistance = 100
+        this.controls.maxDistance = 10
         this.controls.maxPolarAngle = Math.PI / 2.75
 
         setTimeout(() => {
