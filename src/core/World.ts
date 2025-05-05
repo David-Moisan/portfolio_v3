@@ -17,12 +17,12 @@ export default class World {
     public mapCamera!: Camera
 
     constructor(public experience: Experience) {
+        this.loader = new Loader(this.experience)
 
         this.experience.resources.on('ready', () => {
-            this.loader = new Loader(this.experience)
+            this.terminal = new Terminal(this.experience)
             this.map = new Map(this.experience)
             this.target = new TargetProject(this.experience)
-            this.terminal = new Terminal(this.experience)
             this.secret = new NukeOverlay(this.experience)
         })
     }

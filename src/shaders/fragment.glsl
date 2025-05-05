@@ -71,7 +71,17 @@ void main() {
         gridColor = mix(gridColor, TEXT_COLOR * textSample, textSample.r);
     }
 
-    // 🏆 **Fusion finale : background + grille + cibles**
+    // Cellules barrées/grisées aléatoires
+    bool isBlockedCell = cellRandom > 0.92 && cellRandom <= 0.95;
+    if (isBlockedCell) {
+        vec2 cellOrigin = cell / gridSpacing;
+        vec2 localUV = (vUv - cellOrigin) * gridSpacing;
+
+        float stripes = step(0.5, abs(sin((localUV.x + localUV.y) * 45.0)));
+        vec3 blockedColor = BLUE_COLOR;
+        gridColor = mix(gridColor, blockedColor, stripes * 0.3);
+    }
+
     vec3 finalColor = BACKGROUND_COLOR + mix(gridColor, mapColor, height) * lightIntensity;
 
     gl_FragColor = vec4(finalColor, 1.0);

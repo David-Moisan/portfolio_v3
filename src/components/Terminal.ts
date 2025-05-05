@@ -12,6 +12,8 @@ export default class Terminal {
     private commands!: Record<string, TerminalCommand>
     private history: string[] = []
     private historyIndex: number = -1
+    private hasBootedProjects: boolean = false
+    private hasBootedProfile: boolean = false
 
     constructor(experience: Experience) {
         this.createDOMStructure()
@@ -72,12 +74,20 @@ export default class Terminal {
         this.commands = {
             help: this.printHelp.bind(this),
             projects: async () => {
-                await this.simulateBootProcess()
-                await this.simulateStreamingLogs()
+                if (!this.hasBootedProjects) {
+                    await this.simulateBootProcess()
+                    await this.simulateStreamingLogs()
+                    this.hasBootedProjects = true
+                }
+
                 experience.router.navigate("projects")
             },
             profile: async () => {
-                await this.simulateBootProfileProcess()
+                if (!this.hasBootedProfile) {
+                    await this.simulateBootProfileProcess()
+                    this.hasBootedProfile = true
+                }
+
                 experience.router.navigate("profile")
             },
             home: () => experience.router.navigate("home"),
