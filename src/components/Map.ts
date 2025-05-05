@@ -4,7 +4,8 @@ import Experience from "@/app/experience";
 import vertex from '../shaders/vertex.glsl'
 import fragment from '../shaders/fragment.glsl'
 import { BASIC_ROTATION } from '../types/transformation';
-import { RGBELoader, ThreeMFLoader } from 'three/examples/jsm/Addons';
+import { RGBELoader } from 'three/examples/jsm/Addons';
+import { COLORS } from '../types/style';
 
 export default class Map {
     public geometry!: THREE.PlaneGeometry
@@ -120,18 +121,17 @@ export default class Map {
     }
 
     setCity() {
-        const cityGltf = this.experience.resources.items['cityModel'] as any
+        const cityGltf = this.experience.resources.items.cityModel as any
         const cityScene = cityGltf.scene
 
         cityScene.scale.setScalar(0.01)
         cityScene.position.set(2.5, 0.1, 0)
-        cityScene.rotation.y = Math.PI // A voir
+        cityScene.rotation.y = Math.PI 
 
         cityScene.traverse((child : any) => {
             if (child.isMesh) {
                 child.material = new THREE.MeshBasicMaterial({
-                    color: new THREE.Color(0x06151C),
-                    // wireframe: true,
+                    color: new THREE.Color(COLORS.cyprus),
                     transparent: true,
                     opacity: 0.6,
                     depthWrite: false,
@@ -150,7 +150,7 @@ export default class Map {
         const dataPoints = []
         const streamMaterial = new THREE.PointsMaterial({
             size: 0.01,
-            color: 0x00ffcc,
+            color: COLORS.brightTurquoise,
             transparent: true,
             opacity: 0.7,
             depthWrite: false,
@@ -192,7 +192,11 @@ export default class Map {
         const animate = () => {
             const time = performance.now() * 0.001
 
-            dataStream.position.y = Math.sin(time * 2.0) * 0.2
+            const y = Math.sin(time * 2.0) * 0.2
+            const x = Math.sin(y * 13.0 + Math.cos(y * 0.618)) * 0.15
+
+            dataStream.position.y = y
+            dataStream.position.x = x
 
             drones.forEach((drone: any, idx: number) => {
                 const angle = time + idx * 2

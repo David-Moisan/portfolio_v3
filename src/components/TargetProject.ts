@@ -124,7 +124,7 @@ export default class TargetProject {
     
         const pointMaterial = new THREE.PointsMaterial({
             size: 0.07,
-            color: 0xff6464,
+            color: COLORS.hover,
             blending: THREE.AdditiveBlending
         })
     
@@ -354,7 +354,6 @@ export default class TargetProject {
 
             if (targetGroup) {
                 const targetIndex = this.meshes.indexOf(targetGroup)
-                // this.flyToTarget(targetIndex)
                 this.showModal(targetIndex)
             }
         })

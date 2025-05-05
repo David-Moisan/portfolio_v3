@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { GLTFLoader, RGBELoader } from 'three/examples/jsm/Addons';
 import profileVertex from "../shaders/profileVertex.glsl"
 import profileFragment from "../shaders/profileFragment.glsl"
+import { COLORS } from '../types/style';
 
 export default class Profile {
     public scene!: THREE.Scene
@@ -21,19 +22,17 @@ export default class Profile {
     private scanUniforms = {
         uScanY: { value: -1 },
         uTime: { value: 0 },
-        uColor: { value: new THREE.Color(0x00ffff) }
+        uColor: { value: new THREE.Color(COLORS.aqua) }
     }
 
     constructor(public experience: Experience) {
         this.scene = new THREE.Scene()
-        this.scene.background = new THREE.Color(0x0f0f0f)
+        this.scene.background = new THREE.Color(COLORS.black)
 
         this.loader = new GLTFLoader()
         this.camera = new THREE.PerspectiveCamera(45, this.experience.sizes.width / this.experience.sizes.height, 0.1, 100)
         this.camera.position.set(0, 1.4, 2)
         this.container = this.createDOMStructure()
-        this.setupEnvironment()
-        this.loadModel()
         
         this.canvas = this.container.querySelector("canvas.profil_canvas") as HTMLCanvasElement
         if (!this.canvas) throw new Error("Profile canvas not found")
@@ -46,28 +45,40 @@ export default class Profile {
         })
         this.renderer.setSize(this.experience.sizes.width, this.experience.sizes.height)
         this.renderer.setPixelRatio(Math.min(this.experience.sizes.pixelRatio, 2))
-        this.renderer.setClearColor(0x0f0f0f, 1)
+        this.renderer.setClearColor(COLORS.black, 1)
 
         this.experience.time.on('tick', () => this.updateScan())
+        
+        this.init()
     }
 
-    setupEnvironment() {
-        const loader = new RGBELoader()
-        const env = loader.load('textures/hdr/futuristic_command_center_2K.hdr')
+    private async init() {
+        await this.setupEnvironment()
+        await this.waitNextFrame()
+        this.loadModel()
+    }
 
-        if (env) {
-            env.mapping = THREE.EquirectangularReflectionMapping
-    
-            const envGeometry = new THREE.SphereGeometry(50, 64, 64)
-            const envMaterial = new THREE.MeshBasicMaterial({
-                map: env,
-                side: THREE.BackSide
-            })
-            const envMesh = new THREE.Mesh(envGeometry, envMaterial)
-            envMesh.position.y = -3
-            envMesh.position.x = -3
-            this.scene.add(envMesh)
-        }
+    private waitNextFrame(): Promise<void> {
+        return new Promise(resolve => requestAnimationFrame(() => resolve()))
+    }
+
+    async setupEnvironment(): Promise<void> {
+        const loader = new RGBELoader()
+
+        return new Promise((resolve, reject) => {
+            loader.load('textures/hdr/futuristic_command_center_2K.hdr', 
+            (env) => {
+                    env.mapping = THREE.EquirectangularReflectionMapping
+                    
+                    this.scene.environment = env
+                    this.scene.background = env
+
+                    resolve()
+                },
+                undefined,
+                (err) => reject(err)
+            )
+        })
     }
 
     private loadModel() {
@@ -79,7 +90,7 @@ export default class Profile {
                     const mesh = child as THREE.Mesh
 
                     mesh.material = new THREE.MeshBasicMaterial({
-                        color: 0x00ffff,
+                        color: COLORS.aqua,
                         wireframe: true
                     })
 
@@ -90,7 +101,7 @@ export default class Profile {
                         transparent: true,
                         depthWrite: false,
                         blending: THREE.AdditiveBlending,
-                        wireframe: true,
+                        // wireframe: true,
                     })
 
                     this.glowModel = new THREE.Mesh(mesh.geometry, glowMaterial)
@@ -106,7 +117,10 @@ export default class Profile {
             this.glowModel.scale.copy(this.model.scale).multiplyScalar(1.005)
 
             this.scene.add(this.model)
-            this.startScan()
+            requestAnimationFrame(() => {
+                const section = document.getElementById("profile_container")
+                if (section) section.style.opacity = '1'
+            })
         })
     }
 
