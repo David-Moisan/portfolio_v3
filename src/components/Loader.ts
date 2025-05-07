@@ -1,4 +1,6 @@
+import { loaderSection } from "../types/dom";
 import Experience from "../app/experience";
+import { DOMStyle } from "../types/style";
 
 export default class Loader {
     private container!: HTMLElement
@@ -8,26 +10,12 @@ export default class Loader {
     }
 
     private createDOMStructure(): HTMLElement {
-
         const section = document.createElement("section")
         section.classList.add("loading_screen")
-
-        section.innerHTML = `
-            <header>
-                <h1 class="loading_screen__title">
-                    PORTFOLIO 
-                    <span class="loading_screen__title--detail">// V3</span>
-                </h1>
-                <p class="loading_screen__subtitle">LOADING</p>
-            </header>
-            <div>
-                <p>PRODUCED BY // PHI&CODE</p>
-            </div>
-        `
-
-        section.style.display = "flex"
-        section.style.opacity = '1'
-        section.style.zIndex = '1000'
+        section.innerHTML = loaderSection
+        section.style.display = DOMStyle.flex
+        section.style.opacity = DOMStyle.visibleOpacity
+        section.style.zIndex = DOMStyle.z1000
         return section
     }
 }

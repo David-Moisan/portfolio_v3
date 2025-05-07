@@ -8,18 +8,23 @@ export const COLORS = {
     black: 0x0f0f0f
 }
 
-export const OPACITIES = {
-    default: 0.8,
-    hover: 1
-}
-
 export enum CURSORS {
     DEFAULT = "default",
     POINTER = "pointer"
 }
 
+export const DOMStyle = {
+    flex: "flex",
+    displayNone: 'none',
+    inlineBlock: 'inline-block',
+    block: 'block',
+    fullOpacity: '0',
+    visibleOpacity: "1",
+    opacityTransition: 'opacity 0.5s ease',
+    z1000: '1000'
+}
+
 export interface IStyleConfig {
     colors: typeof COLORS;
-    opacities: typeof OPACITIES;
     cursors: typeof CURSORS;
 }
