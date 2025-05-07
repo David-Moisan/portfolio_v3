@@ -6,6 +6,7 @@ import TargetProject from "../components/TargetProject";
 import Terminal from "../components/Terminal";
 import Profile from "../components/Profile";
 import Camera from "../app/camera";
+import HolographicTransition from "../utils/transition";
 
 export default class World {
     public map!: Map
@@ -15,11 +16,15 @@ export default class World {
     public secret!: NukeOverlay
     public profile!: Profile
     public mapCamera!: Camera
+    public transition!: HolographicTransition
 
     constructor(public experience: Experience) {
         this.loader = new Loader(this.experience)
+        this.transition = new HolographicTransition()
+    }
 
-        this.experience.resources.on('ready', () => {
+    public startAfterLoader(): void {
+        this.transition.play(() => {
             this.terminal = new Terminal(this.experience)
             this.map = new Map(this.experience)
             this.target = new TargetProject(this.experience)

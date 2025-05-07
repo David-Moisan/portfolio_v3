@@ -681,6 +681,46 @@ body {
     left: 100%;
 }
 
+.holo_transition {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background: transparent;
+    display: none;
+}
+
+.holo_distortion {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, #0ff2, transparent 60%);
+    mix-blend-mode: lighten;
+    filter: url('#glitch-filter'); /* SVG glitch */
+}
+
+.holo_ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    transform: translate(-50%, -50%);
+    border: 2px solid #0ff;
+    border-radius: 50%;
+    box-shadow: 0 0 20px #0ff8;
+    opacity: 0;
+}
+
+.holo_sweep {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 30%, rgba(0,255,255,0.2), transparent 70%);
+    mix-blend-mode: screen;
+}
+
 /* WebGL */
 .webgl {
     position: fixed;

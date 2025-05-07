@@ -1,4 +1,3 @@
-import { TargetData } from '@/types/targetProjectType';
 import gsap from 'gsap';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons';

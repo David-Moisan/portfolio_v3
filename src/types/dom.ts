@@ -54,3 +54,9 @@ export const projectModal = `
         <a href="#" target="_blank" class="modal-link" style="display: none;">Open →</a>
     </div>
 `
+
+export const transitionLoaderToTerminal = `
+<div class="holo_distortion"></div>
+<div class="holo_ring"></div>
+<div class="holo_sweep"></div>
+`
