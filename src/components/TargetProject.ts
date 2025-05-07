@@ -2,10 +2,10 @@ import * as THREE from 'three';
 import GUI from "lil-gui";
 import Experience from "@/app/experience";
 import Raycaster from '../utils/raycaster';
-import { COLORS, OPACITIES } from '../types/style';
+import { COLORS } from '../types/style';
 import Animation from '../utils/animation';
 import { TextGeometry } from 'three/examples/jsm/Addons';
-import { TargetData, TargetModalData } from '../types/targetProjectType';
+import { projects, TargetData, TargetModalData } from '../types/targetProjectType';
 import UIModal from './UIModal';
 
 export default class TargetProject {
@@ -286,44 +286,7 @@ export default class TargetProject {
     }
 
     private initModalData() {
-        this.modalData = {
-            0: {
-                title: "JobStats",
-                description: "JobStats is a project that uses the France Travail API. This website allows you to have advanced statistics on the job market as a developer in France.",
-                date: "2024",
-                link: "https://www.jobstats.fr/",
-                imageUrl: ""
-            },
-            1: {
-                title: "AlignType",
-                description: "Align Type: Rust utility to synchronize types between GraphQL and TypeScript, simplifying your development workflow.",
-                date: "2024",
-                link: "https://github.com/David-Moisan/alignType/releases/tag/v0.0.1",
-            },
-            2: {
-                title: "Ancient Temple",
-                description: "Explore the ancient temple in the barren desert and find treasure.",
-                date: "2022",
-                link: "https://ancient-temple-by-phi-and-code.vercel.app/",
-                imageUrl: ""
-            },
-            3: {
-                title: "Verona Project Blockchain",
-                description: "Rust Blockchain, an obscure project that hasn't been released online.",
-                date: "2023",
-            },
-            4: {
-                title: "Portfolio v2",
-                description: "Old portfolio",
-                date: "2022",
-                imageUrl: "https://www.cjoint.com/doc/25_03/OCCoBOPac5S_Portfolio.gif"
-            },
-            5: {
-                title: "Trackers",
-                description: "Trackers is a revolutionary financial analysis (ongoing project...)",
-                date: "2025",
-            }
-        }
+        this.modalData = projects
     }
 
     private loadFont() {

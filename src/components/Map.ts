@@ -4,8 +4,8 @@ import Experience from "@/app/experience";
 import vertex from '../shaders/vertex.glsl'
 import fragment from '../shaders/fragment.glsl'
 import { BASIC_ROTATION } from '../types/transformation';
-import { RGBELoader } from 'three/examples/jsm/Addons';
-import { COLORS } from '../types/style';
+import { COLORS, DOMStyle } from '../types/style';
+import { mapHeader } from '../types/dom';
 
 export default class Map {
     public geometry!: THREE.PlaneGeometry
@@ -40,8 +40,7 @@ export default class Map {
     }
 
     setupEnvironment() {
-        const loader = new RGBELoader()
-        const env = loader.load('textures/hdr/futuristic_command_center_2K.hdr')
+        const env = this.experience.resources.items.profileEnvironment as THREE.Texture
 
         if (env) {
             env.mapping = THREE.EquirectangularReflectionMapping
@@ -218,14 +217,10 @@ export default class Map {
         headerSource.classList.add("header-source")
         
         if (wrapper) {
-            headerSource.innerHTML = `
-                <span>SOURCE: CIA</span>
-                <span>SOURCE: FBI</span>
-                <span>SOURCE: U.S. STATE DEPARTMENT</span>
-            `
+            headerSource.innerHTML = mapHeader
         }
 
-        headerSource.style.display = "flex"
+        headerSource.style.display = DOMStyle.flex
 
         wrapper!.appendChild(headerSource)
         return headerSource

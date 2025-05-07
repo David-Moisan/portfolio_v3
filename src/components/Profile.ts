@@ -1,24 +1,24 @@
 import SFXManager from '../utils/sfxManager';
 import Experience from '../app/experience';
 import * as THREE from 'three';
-import { GLTFLoader, RGBELoader } from 'three/examples/jsm/Addons';
 import profileVertex from "../shaders/profileVertex.glsl"
 import profileFragment from "../shaders/profileFragment.glsl"
-import { COLORS } from '../types/style';
+import { COLORS, DOMStyle } from '../types/style';
+import { GLTF } from 'three/examples/jsm/Addons';
+import { sectionProfile } from '../types/dom';
 
 export default class Profile {
     public scene!: THREE.Scene
-    public loader!: GLTFLoader
     public camera!: THREE.PerspectiveCamera
-    public canvas!: HTMLCanvasElement
-    public renderer!: THREE.WebGLRenderer
     public model: THREE.Object3D | null = null
     public glowModel!: THREE.Object3D
     public container!: HTMLElement
+    public canvas!: HTMLCanvasElement
     private scanInProgress: boolean = false
     private scanStartTime: number = 0
     private scanDuration: number = 1500
     private scanning: boolean = false
+    public renderer!: THREE.WebGLRenderer
     private scanUniforms = {
         uScanY: { value: -1 },
         uTime: { value: 0 },
@@ -26,14 +26,13 @@ export default class Profile {
     }
 
     constructor(public experience: Experience) {
-        this.scene = new THREE.Scene()
-        this.scene.background = new THREE.Color(COLORS.black)
 
-        this.loader = new GLTFLoader()
+        this.scene = new THREE.Scene()
         this.camera = new THREE.PerspectiveCamera(45, this.experience.sizes.width / this.experience.sizes.height, 0.1, 100)
         this.camera.position.set(0, 1.4, 2)
+
         this.container = this.createDOMStructure()
-        
+
         this.canvas = this.container.querySelector("canvas.profil_canvas") as HTMLCanvasElement
         if (!this.canvas) throw new Error("Profile canvas not found")
         
@@ -53,7 +52,11 @@ export default class Profile {
     }
 
     private async init() {
-        await this.setupEnvironment()
+        const hdrTexture = this.experience.resources.items.profileEnvironment as THREE.Texture
+        hdrTexture.mapping = THREE.EquirectangularReflectionMapping
+        this.scene.environment = hdrTexture
+        this.scene.background = hdrTexture
+
         await this.waitNextFrame()
         this.loadModel()
     }
@@ -62,65 +65,47 @@ export default class Profile {
         return new Promise(resolve => requestAnimationFrame(() => resolve()))
     }
 
-    async setupEnvironment(): Promise<void> {
-        const loader = new RGBELoader()
-
-        return new Promise((resolve, reject) => {
-            loader.load('textures/hdr/futuristic_command_center_2K.hdr', 
-            (env) => {
-                    env.mapping = THREE.EquirectangularReflectionMapping
-                    
-                    this.scene.environment = env
-                    this.scene.background = env
-
-                    resolve()
-                },
-                undefined,
-                (err) => reject(err)
-            )
-        })
-    }
-
     private loadModel() {
-        this.loader.load('/models/gltf/LeePerrySmith.glb', (gltf) => {
-            this.model = gltf.scene
-            this.model.traverse((child) => {
 
-                if ((child as THREE.Mesh).isMesh) {
-                    const mesh = child as THREE.Mesh
+        const gltf = this.experience.resources.items.profileModel as GLTF
+        this.model = gltf.scene
 
-                    mesh.material = new THREE.MeshBasicMaterial({
-                        color: COLORS.aqua,
-                        wireframe: true
-                    })
+        this.model.traverse((child) => {
+            if ((child as THREE.Mesh).isMesh) {
+                const mesh = child as THREE.Mesh
+        
+                mesh.material = new THREE.MeshBasicMaterial({
+                    color: COLORS.aqua,
+                    wireframe: true
+                })
+        
+                const glowMaterial = new THREE.ShaderMaterial({
+                    uniforms: this.scanUniforms,
+                    vertexShader: profileVertex,
+                    fragmentShader: profileFragment,
+                    transparent: true,
+                    depthWrite: false,
+                    blending: THREE.AdditiveBlending,
+                })
+        
+                this.glowModel = new THREE.Mesh(mesh.geometry, glowMaterial)
+        
+                this.scene.add(this.glowModel)
+            }
+        })
 
-                    const glowMaterial = new THREE.ShaderMaterial({
-                        uniforms: this.scanUniforms,
-                        vertexShader: profileVertex,
-                        fragmentShader: profileFragment,
-                        transparent: true,
-                        depthWrite: false,
-                        blending: THREE.AdditiveBlending,
-                        // wireframe: true,
-                    })
+        this.model.scale.setScalar(0.4)
+        this.model.position.y = 0.5
+        this.camera.position.set(-0.25, 1.2, 2.2)
 
-                    this.glowModel = new THREE.Mesh(mesh.geometry, glowMaterial)
+        this.glowModel.position.copy(this.model.position)
+        this.glowModel.scale.copy(this.model.scale).multiplyScalar(1.005)
 
-                    this.scene.add(this.glowModel)
-                }
-            })
-            this.model.scale.setScalar(0.4)
-            this.model.position.y = 0.5
-            this.camera.position.set(-0.25, 1.2, 2.2)
+        this.scene.add(this.model)
 
-            this.glowModel.position.copy(this.model.position)
-            this.glowModel.scale.copy(this.model.scale).multiplyScalar(1.005)
-
-            this.scene.add(this.model)
-            requestAnimationFrame(() => {
-                const section = document.getElementById("profile_container")
-                if (section) section.style.opacity = '1'
-            })
+        requestAnimationFrame(() => {
+            const section = document.getElementById("profile_container")
+            if (section) section.style.opacity = DOMStyle.visibleOpacity
         })
     }
 
@@ -134,20 +119,7 @@ export default class Profile {
     private createDOMStructure(): HTMLElement {
         const section = document.createElement("section")
         section.id = "profile_container"
-        section.innerHTML = `
-        <div id="profil_wrapper">
-                <div class="profile-card">
-                    <h2>PROFILE</h2>
-                    <p><strong>Real Name :</strong> David Moisan</p>
-                    <p><strong>Code Name :</strong> PHI_AND_CODE</p>
-                    <p><strong>Skills :</strong> TS / Three.js / WebGL / Rust / Node / PHP</p>
-                    <p><strong>Last Location :</strong> 🇫🇷 France</p>
-                    <p><strong>Contact :</strong> <a href="mailto:davprocode@gmail.com">☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎☠︎︎</a></p>
-                </div>
-                <canvas class="profil_canvas"></canvas>
-            </div>
-        `
-
+        section.innerHTML = sectionProfile
         document.body.appendChild(section)
 
         return section
@@ -168,13 +140,13 @@ export default class Profile {
         const card = this.container.querySelector(".profile-card") as HTMLElement
 
         if (card) {
-            card.style.opacity = '0'
-            card.style.transition = 'opacity 0.5s ease'
+            card.style.opacity = DOMStyle.fullOpacity
+            card.style.transition = DOMStyle.opacityTransition
 
             SFXManager.playScanSound()
 
             setTimeout(() => {
-                card.style.opacity = '1'
+                card.style.opacity = DOMStyle.visibleOpacity
                 this.scanInProgress = false
             }, 2700)
         }
@@ -196,7 +168,7 @@ export default class Profile {
             const card = this.container.querySelector(".profile-card") as HTMLElement
 
             if (card) {
-                card.style.opacity = '1'
+                card.style.opacity = DOMStyle.visibleOpacity
             }
         }
     }

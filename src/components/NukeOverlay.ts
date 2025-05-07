@@ -1,5 +1,6 @@
+import { overlay404 } from "../types/dom"
 import Experience from "../app/experience"
-
+import { DOMStyle } from "../types/style"
 
 export default class NukeOverlay {
     private container!: HTMLElement
@@ -12,15 +13,8 @@ export default class NukeOverlay {
         const overlay = document.createElement("div")
         overlay.id = "glitch-overlay"
         overlay.className = "glitch-overlay"
-        overlay.style.display = "none"
-
-        overlay.innerHTML = `
-            <div class="glitch" data-text="404 SYSTEM FAILURE">404 SYSTEM FAILURE</div>
-            <div class="glow">404 SYSTEM FAILURE</div>
-            <p class="subtitle">REBOOTING SEQUENCE</p>
-            <div class="scanlines"></div>
-        `
-
+        overlay.style.display = DOMStyle.displayNone
+        overlay.innerHTML = overlay404
         document.body.appendChild(overlay)
         return overlay
     }

@@ -1,8 +1,7 @@
 import Experience from '@/app/experience';
-import { COLORS, CURSORS, OPACITIES } from '../types/style';
+import { COLORS, CURSORS } from '../types/style';
 import * as THREE from 'three';
 import { EventEmitter } from './eventEmitter';
-import SFXManager from './sfxManager';
 
 export default class Raycaster extends EventEmitter {
     private raycaster!: THREE.Raycaster

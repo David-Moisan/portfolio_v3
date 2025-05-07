@@ -1,5 +1,7 @@
 import { TargetModalData } from "@/types/targetProjectType"
 import SFXManager from "../utils/sfxManager"
+import { projectModal } from "../types/dom"
+import { DOMStyle } from "../types/style"
 
 export default class UIModal {
     public domElement!: HTMLDivElement
@@ -9,28 +11,9 @@ export default class UIModal {
     constructor() {
         this.domElement = document.createElement('div')
         this.domElement.className = 'ui-modal'
-        this.initDOM()
+        this.domElement.innerHTML = projectModal
         this.setupEventListeners()
         document.body.appendChild(this.domElement)
-    }
-
-    private initDOM() {
-        this.domElement.innerHTML = `
-            <div class="modal-header">
-                <div class="modal-header-title">
-                    <span class="modal-title-point"></span>
-                    <h3 class="modal-title"></h3>
-                </div>
-                <button id="modal-close" class="modal-close">✕</button>
-            </div>
-            <div class="modal-content">
-                <div class="modal-date" style="--i: 1;"></div>
-                <p class="modal-description" style="--i: 2;"></p>
-            </div>
-            <div class="modal-footer">
-                <a href="#" target="_blank" class="modal-link" style="display: none;">Open →</a>
-            </div>
-        `
     }
 
     private setupEventListeners() {
@@ -65,13 +48,13 @@ export default class UIModal {
         dateEl.textContent = data.date;
 
         if (data.link) {
-            linkEl.style.display = 'inline-block'
+            linkEl.style.display = DOMStyle.inlineBlock
             linkEl.href = data.link
         } else {
-            linkEl.style.display = 'none'
+            linkEl.style.display = DOMStyle.displayNone
         }
 
-        this.domElement.style.display = 'block'
+        this.domElement.style.display = DOMStyle.block
         requestAnimationFrame(() => {
             SFXManager.playDataSound()
             this.domElement.classList.add('visible')
@@ -86,7 +69,7 @@ export default class UIModal {
         const transitionDuration = 300
 
         setTimeout(() => {
-            this.domElement.style.display = 'none'
+            this.domElement.style.display = DOMStyle.displayNone
             
         }, transitionDuration)
 
