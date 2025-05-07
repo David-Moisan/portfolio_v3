@@ -14,20 +14,25 @@ window.addEventListener("DOMContentLoaded", () => {
     const experience = new Experience(canvas)
     const startTime = Date.now()
 
-    experience.resources.on('ready', () => {
+    const loader = document.querySelector('.loading_screen') as HTMLElement
+    const audioCTA = document.createElement('button')
+    audioCTA.textContent = "Launch with sound (recommended)"
+    audioCTA.classList.add('audio_cta')
+    loader.appendChild(audioCTA)
+
+    audioCTA.addEventListener('click', () => {
+        experience.startAudio()
+
         const elapsed = Date.now() - startTime
         const remainingTime = Math.max(0, showLoaderDuration - elapsed)
-
+        
         setTimeout(() => {
-            const loader = document.querySelector('.loading_screen') as HTMLElement
-            if (!loader) return
-
             loader.style.transition = 'opacity 0.4s ease'
             loader.style.opacity = '0'
-
+    
             setTimeout(() => {
                 loader.style.display = 'none'
-
+    
                 experience.world.startAfterLoader()
             }, 400)
         }, remainingTime)

@@ -721,6 +721,46 @@ body {
     mix-blend-mode: screen;
 }
 
+.audio_cta {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+
+    padding: 1rem 2rem;
+    background: linear-gradient(to right, var(--black-07), var(--cyprus-09));
+    border: 2px solid var(--aqua-03);
+    border-radius: 6px;
+
+    color: var(--aqua);
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    text-shadow: 0 0 4px var(--aqua-05);
+
+    box-shadow: 
+        0 0 6px var(--aqua-04),
+        0 0 15px var(--aqua-03),
+        inset 0 0 8px var(--aqua-02);
+
+    cursor: pointer;
+    backdrop-filter: blur(8px) brightness(1.1);
+
+    transition: 
+        box-shadow 0.3s ease,
+        background 0.3s ease;
+
+    animation: hud-glow-pulse 4s ease-in-out infinite;
+}
+
+.audio_cta:hover {
+    box-shadow:
+        0 0 12px var(--aqua-05),
+        0 0 32px var(--aqua-04),
+        inset 0 0 15px var(--aqua-03);
+    background: linear-gradient(to right, var(--black-085), var(--cyprus-095));
+}
+
 /* WebGL */
 .webgl {
     position: fixed;
@@ -730,6 +770,21 @@ body {
 }
 
 /** Animation */
+@keyframes hud-glow-pulse {
+    0%, 100% {
+        box-shadow:
+            0 0 6px var(--aqua-03),
+            0 0 15px var(--aqua-02),
+            inset 0 0 8px var(--aqua-01);
+    }
+    50% {
+        box-shadow:
+            0 0 12px var(--aqua-05),
+            0 0 30px var(--aqua-04),
+            inset 0 0 15px var(--aqua-03);
+    }
+}
+
 @keyframes loadingDots {
     0% { content: ''; }
     25% { content: '.'; }

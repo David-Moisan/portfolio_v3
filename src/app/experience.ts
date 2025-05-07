@@ -37,8 +37,6 @@ export default class Experience {
         }
         instance = this
 
-        AudioManager.playBackgroundMusic()
-
         //ANCHOR - Options
         this.canvas = canvas
 
@@ -63,6 +61,10 @@ export default class Experience {
 
         this.sizes.on('resize', () => this.resize())
         this.time.on('tick', () => this.update())
+    }
+
+    public startAudio() {
+        AudioManager.playBackgroundMusic()
     }
 
     public setScene(name: "map" | "profile") {
