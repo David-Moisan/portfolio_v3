@@ -1,11 +1,10 @@
 version: '3.8'
 
 services:
-  frontend:
+  builder:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: phiandcodes-web
-    ports:
-      - "8080:80"
-    restart: unless-stopped
+    volumes:
+      - ./dist:/app/dist
+    command: echo "Build done"
