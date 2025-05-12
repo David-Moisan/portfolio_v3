@@ -1,7 +1,7 @@
 export default class AudioManager {
     private static backgroundTracks: string[] = [
-        "/sounds/background_song_2.mp3",
-        "/sounds/background_song_1.mp3"
+        "/sounds/background_song_2_compressed.mp3",
+        "/sounds/background_song_1_compressed.mp3"
     ]
     private static currentTrackIndex = 0
     private static currentAudio: HTMLAudioElement | null = null

@@ -2,6 +2,7 @@ import { FontLoader, GLTFLoader, RGBELoader } from "three/examples/jsm/Addons";
 import { SourceType } from "../types/sources";
 import { EventEmitter } from "./eventEmitter";
 import * as THREE from 'three';
+import { MeshoptDecoder } from "meshoptimizer";
 
 export default class Resources extends EventEmitter {
     public items: Record<string, unknown> = {}
@@ -29,6 +30,8 @@ export default class Resources extends EventEmitter {
             hdrLoader: new RGBELoader(),
             gltfLoader: new GLTFLoader()
         }
+
+        this.loaders.gltfLoader.setMeshoptDecoder(MeshoptDecoder)
     }
 
     startLoading() {

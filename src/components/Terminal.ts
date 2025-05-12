@@ -195,6 +195,7 @@ export default class Terminal {
     private printLine(text: string) {
         const el = document.createElement("p")
         el.innerText = text
+        el.style.fontSize = "1rem"
         this.output.appendChild(el)
     }
 
@@ -230,8 +231,8 @@ export default class Terminal {
         ];
 
         for (const step of steps) {
-            await this.typeLine(step, 30)
-            await wait(300)
+            await this.typeLine(step, 10)
+            await wait(200)
         }
     }
 
@@ -244,8 +245,8 @@ export default class Terminal {
         ]
 
         for (const step of steps) {
-            await this.typeLine(step, 30)
-            await wait(400)
+            await this.typeLine(step, 10)
+            await wait(200)
         }
     }
 
@@ -264,8 +265,8 @@ export default class Terminal {
         ]
 
         for (const step of steps) {
-            await this.typeLine(step, 20)
-            await wait(300)
+            await this.typeLine(step, 10)
+            await wait(200)
         }
     }
 

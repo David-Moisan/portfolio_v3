@@ -1,6 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Sofia+Sans+Semi+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500&family=Sofia+Sans+Semi+Condensed:ital,wght@0,1..1000;1,1..1000&family=VT323&display=swap');
 
 :root {
     /* Couleurs */
@@ -202,6 +200,7 @@ body {
     font-family: 'Orbitron', sans-serif;
     letter-spacing: 2px;
     text-transform: uppercase;
+    font-size: 1rem;
 }
 
 .terminal-output_header::after {
@@ -213,15 +212,24 @@ body {
     height: 1px;
     background: var(--aqua-07);
     box-shadow: 0 0 10px var(--aqua-07);
+    font-size: 1rem;
 }
 /* Ligne d'input améliorée */
+.terminal_container p > span:not(.prompt) {
+    font-size: 1rem;
+}
+
 .input-line {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 1.2rem;
+    font-size: 1rem;
     margin-top: 1rem;
     position: relative;
+}
+
+.command {
+    font-size: 1rem;
 }
 
 .prompt {
@@ -229,11 +237,13 @@ body {
     font-weight: bold;
     text-shadow: 0 0 5px var(--aqua-07);
     white-space: nowrap;
+    font-size: 1rem;
 }
 
 .prompt::after {
     content: '>';
     margin-right: 0.5rem;
+    font-size: 1rem;
 }
 
 #input {
@@ -242,7 +252,7 @@ body {
     color: var(--aquamarine);
     font-family: 'Courier New', monospace;
     flex-grow: 1;
-    font-size: 1.2rem;
+    font-size: 1rem;
     outline: none;
     caret-color: var(--aqua);
     text-shadow: 0 0 5px var(--aqua-05);
@@ -256,11 +266,6 @@ body {
     color: var(--aqua);
     margin-left: 2px;
     vertical-align: baseline;
-}
-
-@keyframes blink {
-    from, to { opacity: 0; }
-    50% { opacity: 1; }
 }
 
 /* Effets de glitch améliorés */
@@ -796,48 +801,6 @@ body {
 @keyframes blink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
-}
-
-@keyframes glitch {
-    0% {
-        transform: none;
-    }
-    1% {
-        transform: rotateX(10deg) skewX(90deg);
-    }
-    2% {
-        transform: none;
-    }
-}
-
-@keyframes noise-1 {
-    0% { clip-path: inset(10% 0 90% 0); }
-    50% { clip-path: inset(50% 0 30% 0); }
-    100% { clip-path: inset(20% 0 80% 0); }
-}
-
-@keyframes noise-2 {
-    0% { clip-path: inset(80% 0 10% 0); }
-    50% { clip-path: inset(40% 0 50% 0); }
-    100% { clip-path: inset(60% 0 30% 0); }
-}
-
-@keyframes fudge {
-    from {
-        transform: translate(0px, 0px);
-    }
-    to {
-        transform: translate(0px, 2%);
-    }
-}
-
-@keyframes terminalScan {
-    0% {
-        transform: translateY(0);
-    }
-    100% {
-        transform: translateY(2%);
-    }
 }
 
 @keyframes fadeInStagger {

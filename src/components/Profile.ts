@@ -99,7 +99,7 @@ export default class Profile {
         this.camera.position.set(-0.25, 1.2, 2.2)
 
         this.glowModel.position.copy(this.model.position)
-        this.glowModel.scale.copy(this.model.scale).multiplyScalar(1.005)
+        this.glowModel.scale.copy(this.model.scale).multiplyScalar(4)
 
         this.scene.add(this.model)
 

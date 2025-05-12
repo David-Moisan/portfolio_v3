@@ -33,16 +33,16 @@ export const sources: SourceType[] = [
     {
         name: 'profileModel',
         type: 'gltf',
-        path: '/models/gltf/LeePerrySmith.glb'
+        path: '/models/gltf/LeePerrySmith-optimized.glb'
     },
     {
         name: 'cityModel',
         type: 'gltf',
-        path: '/models/gltf/city.glb'
+        path: '/models/gltf/city-optimized.glb'
     },
     {
         name: 'droneModel',
         type: 'gltf',
-        path: '/models/gltf/drone.glb'
+        path: '/models/gltf/drone-optimized.glb'
     }
 ]
