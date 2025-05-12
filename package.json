@@ -1,7 +1,7 @@
 {
   "name": "portfolio_v3",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "dev": "vite",
     "build": "vite build"

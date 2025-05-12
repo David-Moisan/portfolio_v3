@@ -30,6 +30,10 @@ export default class Map {
             this.debugFolder = this.experience.debug.debugger.addFolder('Map Params')
         }
 
+        this.initMap()
+    }
+
+    initMap() {
         this.setupEnvironment()
         this.setGeometry()
         this.setTextures()
@@ -121,6 +125,12 @@ export default class Map {
 
     setCity() {
         const cityGltf = this.experience.resources.items.cityModel as any
+
+        if (!cityGltf || !cityGltf.scene) {
+            console.warn("cityGltf or cityGltf.scene is undefined")
+            return
+        }
+
         const cityScene = cityGltf.scene
 
         cityScene.scale.setScalar(0.01)
