@@ -24,12 +24,20 @@ export default class World {
     }
 
     public startAfterLoader(): void {
-        this.transition.play(() => {
-            this.terminal = new Terminal(this.experience)
-            this.map = new Map(this.experience)
-            this.target = new TargetProject(this.experience)
-            this.secret = new NukeOverlay(this.experience)
-        })
+        const runScene = () => {
+            this.transition.play(() => {
+                this.terminal = new Terminal(this.experience)
+                this.map = new Map(this.experience)
+                this.target = new TargetProject(this.experience)
+                this.secret = new NukeOverlay(this.experience)
+            })
+        }
+
+        if (this.experience.resources.isReady) {
+            runScene()
+        } else {
+            this.experience.resources.on('ready', runScene)
+        }
     }
 
     public initProfile(): void {

@@ -8,6 +8,7 @@ export default class Resources extends EventEmitter {
     public loaders: Record<string, any> = {}
     public loaded: number = 0
     public toLoad!: number
+    public isReady: boolean = false
     
     constructor(public sources: SourceType[]) {
         super()
@@ -72,12 +73,13 @@ export default class Resources extends EventEmitter {
         this.loaded++
 
         if (this.loaded === this.toLoad) {
+            this.isReady = true
             this.trigger('ready')
         }
     }
 
     private handleError(source: SourceType, error: ErrorEvent) {
-        console.error(`Error loading ${source.name}:`, error);
+        console.error(`Error loading ${source.name}:`, error instanceof ErrorEvent ? error.message : error);
         this.loaded++;
     }
 }
